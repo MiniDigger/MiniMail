@@ -16,9 +16,9 @@ const selectedMail = computed({
   },
   async set(mail: Mail | undefined) {
     if (mail) {
-      await router.push(`/${route.params.account}/${route.params.folder}/${mail.seq}`);
+      await router.push(`/mail/${route.params.account}/${route.params.folder}/${mail.seq}`);
     } else {
-      await router.push(`/${route.params.account}/${route.params.folder}`);
+      await router.push(`/mail/${route.params.account}/${route.params.folder}`);
     }
   },
 });

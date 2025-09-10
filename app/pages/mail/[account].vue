@@ -27,7 +27,7 @@ const links = computed(
         ...(folders.value?.map((folder) => ({
           label: folder.name,
           icon: "i-lucide-house",
-          to: `/${route.params.account}/${[...folder.path, folder.name].join(".")}`,
+          to: `/mail/${route.params.account}/${[...folder.path, folder.name].join(".")}`,
         })) || []),
       ],
     ] satisfies NavigationMenuItem[][]
@@ -46,12 +46,12 @@ const groups = computed(() => [
       {
         label: "Filters",
         icon: "i-lucide-filter",
-        to: "/filters",
+        to: "/settings/filters",
       },
       {
         label: "Inboxes",
         icon: "i-lucide-cog",
-        to: "/settings",
+        to: "/settings/accounts",
       },
     ],
   },

@@ -32,7 +32,7 @@ const filteredMails = computed(() => {
 watch(filteredMails, async () => {
   const selectedMail = route.params.mail;
   if (selectedMail && !filteredMails.value.find((mail) => mail.id === selectedMail)) {
-    await router.push(`/${route.params.account}/${route.params.folder}`);
+    await router.push(`/mail/${route.params.account}/${route.params.folder}`);
   }
 });
 </script>

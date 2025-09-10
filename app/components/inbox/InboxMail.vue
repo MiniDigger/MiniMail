@@ -55,7 +55,7 @@ function onSubmit() {
 }
 
 async function close() {
-  await router.push(`/${route.params.account}/${route.params.folder}`);
+  await router.push(`/mail/${route.params.account}/${route.params.folder}`);
 }
 </script>
 

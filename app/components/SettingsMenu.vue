@@ -41,7 +41,12 @@ const items = computed<DropdownMenuItem[][]>(() => [
     {
       label: "Filters",
       icon: "i-lucide-filter",
-      to: "/filters",
+      to: "/settings/filters",
+    },
+    {
+      label: "Accounts",
+      icon: "i-lucide-users",
+      to: "/settings/accounts",
     },
   ],
   [

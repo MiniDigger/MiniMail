@@ -18,17 +18,19 @@ const items = computed<DropdownMenuItem[][]>(() => {
     accounts.map((account) => ({
       label: account.label,
       async onSelect() {
-        await router.push("/" + account.label);
+        await router.push("/mail/" + account.label);
       },
     })),
     [
       {
-        label: "Add inbox",
+        label: "Add account",
         icon: "i-lucide-circle-plus",
+        to: "/settings/accounts?new=true",
       },
       {
-        label: "Manage inboxes",
+        label: "Manage accounts",
         icon: "i-lucide-cog",
+        to: "/settings/accounts",
       },
     ],
   ];
