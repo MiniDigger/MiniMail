@@ -4,19 +4,20 @@ A mail client, just for me.
 
 ## Features
 
-- none
+- viewing mail folders
+- viewing mails
 
 ## Local Setup
 
-For convenience, a docker-compose file is provided to run greenmail (mock mail server) and roundcube (and actually good email client):
+For convenience, a docker-compose file is provided to run greenmail (mock mail server) and roundcube (an actually good email client):
 
 - `Start Dependencies`
-- `Open http://localhost:3001/ in your browser to see roundcube`
+- Open http://localhost:3001/ in your browser to see roundcube
 
 To start the actual application:
 
 - `Start Dev`
-- `Open http://localhost:3000/ in your browser to see the app`
+- Open http://localhost:3000/ in your browser to see the app
 
 ### Recommended IDE settings
 

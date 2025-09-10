@@ -15,7 +15,9 @@ export default defineNuxtConfig({
   },
   experimental: {
     typedPages: true,
+    asyncContext: true,
   },
+  ssr: false,
   eslint: {
     config: {
       autoInit: false,

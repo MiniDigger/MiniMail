@@ -60,7 +60,7 @@ export async function getMails(mailAccount: MailAccount, path: string[]) {
   } finally {
     lock.release();
   }
-  return mails;
+  return mails.reverse();
 }
 
 export async function getMail(mailAccount: MailAccount, path: string[], seq: string, preferredPart = "text/plain") {
@@ -92,7 +92,6 @@ export async function getMail(mailAccount: MailAccount, path: string[], seq: str
 }
 
 function mapMessage(message: FetchMessageObject): Mail {
-  console.log(message);
   return {
     seq: message.seq,
     flags: mapFlags(message),
