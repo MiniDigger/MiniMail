@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import type { DropdownMenuItem } from "@nuxt/ui";
+import { useAccount } from "community-jazz-vue";
+import { UserAccount } from "~/jazz/schema";
 
 interface Account {
   label: string;
@@ -7,18 +9,18 @@ interface Account {
 
 const router = useRouter();
 const route = useRoute();
+const { me } = useAccount(UserAccount);
 
-const { accounts } = defineProps<{
+defineProps<{
   collapsed?: boolean;
-  accounts: Account[];
 }>();
 
 const items = computed<DropdownMenuItem[][]>(() => {
   return [
-    accounts.map((account) => ({
-      label: account.label,
+    me.value?.root?.accounts?.map((account) => ({
+      label: account?.email,
       async onSelect() {
-        await router.push("/mail/" + account.label);
+        await router.push("/mail/" + account?.email);
       },
     })),
     [

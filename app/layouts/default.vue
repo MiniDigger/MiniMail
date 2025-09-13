@@ -8,7 +8,7 @@ import "jazz-tools/inspector/register-custom-element";
 <template>
   <JazzVueProvider
     :AccountSchema="UserAccount"
-    :sync="{ peer: 'wss://cloud.jazz.tools/?key=jazz@benndorf.dev' }"
+    :sync="{ peer: 'wss://cloud.jazz.tools/?key=jazz@benndorf.dev', when: 'signedUp' }"
     :guestMode="false"
   >
     <PasskeyAuthBasicUI appName="Test">

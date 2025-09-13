@@ -6,15 +6,6 @@ const route = useRoute();
 
 const open = ref(false);
 
-const accounts = [
-  {
-    label: "test@benndorf.dev",
-  },
-  {
-    label: "test2@benndorf.dev",
-  },
-];
-
 const { data: folders } = await useFetch(() => `/api/mail/${route.params.account}/folders`, {
   default: () => [],
 });
@@ -69,7 +60,7 @@ const groups = computed(() => [
       :ui="{ footer: 'lg:border-t lg:border-default' }"
     >
       <template #header="{ collapsed }">
-        <AccountMenu :collapsed :accounts />
+        <AccountMenu :collapsed />
       </template>
 
       <template #default="{ collapsed }">

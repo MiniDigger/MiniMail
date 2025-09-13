@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import type { DropdownMenuItem } from "@nuxt/ui";
+import { useAccount } from "community-jazz-vue";
+import { UserAccount } from "~/jazz/schema";
 
 defineProps<{
   collapsed?: boolean;
@@ -7,6 +9,25 @@ defineProps<{
 
 const colorMode = useColorMode();
 const appConfig = useAppConfig();
+const { me } = useAccount(UserAccount);
+
+watch(
+  () => me.value?.root?.settings,
+  (settings) => {
+    if (settings) {
+      if (settings.$jazz.has("colorMode")) {
+        colorMode.preference = settings.colorMode;
+      }
+      if (settings.$jazz.has("primaryColor")) {
+        appConfig.ui.colors.primary = settings.primaryColor;
+      }
+      if (settings.$jazz.has("neutralColor")) {
+        appConfig.ui.colors.neutral = settings.neutralColor;
+      }
+    }
+  },
+  { immediate: true }
+);
 
 const colors = [
   "red",
@@ -72,6 +93,7 @@ const items = computed<DropdownMenuItem[][]>(() => [
               e.preventDefault();
 
               appConfig.ui.colors.primary = color;
+              me.value?.root?.settings?.$jazz?.set("primaryColor", color);
             },
           })),
         },
@@ -93,6 +115,7 @@ const items = computed<DropdownMenuItem[][]>(() => [
               e.preventDefault();
 
               appConfig.ui.colors.neutral = color;
+              me.value?.root?.settings?.$jazz?.set("neutralColor", color);
             },
           })),
         },
@@ -111,6 +134,7 @@ const items = computed<DropdownMenuItem[][]>(() => [
             e.preventDefault();
 
             colorMode.preference = "light";
+            me.value?.root?.settings?.$jazz?.set("colorMode", "light");
           },
         },
         {
@@ -121,6 +145,7 @@ const items = computed<DropdownMenuItem[][]>(() => [
           onUpdateChecked(checked: boolean) {
             if (checked) {
               colorMode.preference = "dark";
+              me.value?.root?.settings?.$jazz?.set("colorMode", "dark");
             }
           },
           onSelect(e: Event) {

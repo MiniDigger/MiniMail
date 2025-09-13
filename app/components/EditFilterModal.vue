@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { Filter, type FilterType, Condition } from "~/jazz/schema";
-import type { FormSubmitEvent } from "@nuxt/ui";
 
 const {
   filter = {
@@ -18,10 +17,6 @@ const state = reactive<FilterType>(JSON.parse(JSON.stringify(filter)));
 const emit = defineEmits<{
   close: [FilterType?];
 }>();
-
-function save(event: FormSubmitEvent<FilterType>) {
-  emit("close", event.data);
-}
 
 function insertCondition(idx: number) {
   state.conditions?.splice(idx + 1, 0, { field: "subject", operator: "contains", value: "" });
@@ -41,7 +36,7 @@ function deleteAction(idx: number) {
 <template>
   <UModal>
     <template #content>
-      <UForm :schema="Filter" :state="state" class="space-y-4 p-4 overflow-y-auto" @submit="save">
+      <UForm :schema="Filter" :state="state" class="space-y-4 p-4 overflow-y-auto" @submit="emit('close', $event.data)">
         <UFormField label="Name" name="name">
           <UInput v-model="state.name" class="w-48" />
         </UFormField>
@@ -118,5 +113,3 @@ function deleteAction(idx: number) {
     </template>
   </UModal>
 </template>
-
-<style scoped></style>
