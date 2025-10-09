@@ -52,18 +52,18 @@ function deleteAction(idx: number) {
           <div class="space-y-4">
             <div v-for="(condition, idx) in state.conditions" class="flex gap-4">
               <USelect
-                label="Field"
                 v-model="condition.field"
+                label="Field"
                 :items="[...Condition.shape.field.values]"
                 class="flex-grow"
               />
               <USelect
-                label="Operator"
                 v-model="condition.operator"
+                label="Operator"
                 :items="[...Condition.shape.operator.values]"
                 class="flex-grow"
               />
-              <UInput label="Value" v-model="condition.value" class="flex-grow" />
+              <UInput v-model="condition.value" label="Value" class="flex-grow" />
 
               <UButton icon="i-lucide-plus" size="md" color="primary" variant="solid" @click="insertCondition(idx)" />
               <UButton
@@ -83,14 +83,14 @@ function deleteAction(idx: number) {
           <div class="space-y-4">
             <div v-for="(action, idx) in state.actions" class="flex gap-4">
               <USelect
-                label="Action"
                 v-model="action.type"
+                label="Action"
                 :items="[...Filter.shape.actions.element.shape.type.values]"
                 class="flex-grow"
               />
               <div v-if="action.type === 'delete'" class="flex-grow" />
               <!-- todo better selector for folder -->
-              <UInput v-else label="Value" v-model="action.value" class="flex-grow" />
+              <UInput v-else v-model="action.value" label="Value" class="flex-grow" />
 
               <UButton icon="i-lucide-plus" size="md" color="primary" variant="solid" @click="insertAction(idx)" />
               <UButton

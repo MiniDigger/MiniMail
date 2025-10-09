@@ -13,6 +13,7 @@
     "lint:prettier": "prettier --ignore-path .config/.prettierignore --ignore-path .gitignore --write --list-different ."
   },
   "dependencies": {
+    "@clerk/vue": "1.14.3",
     "@compodium/nuxt": "0.1.0-beta.11",
     "@iconify-json/lucide": "1.2.69",
     "@iconify-json/mdi": "1.2.3",

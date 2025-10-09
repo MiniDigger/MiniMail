@@ -9,7 +9,7 @@ defineProps<{
 
 const colorMode = useColorMode();
 const appConfig = useAppConfig();
-const { me } = useAccount(UserAccount);
+const { me, logOut } = useAccount(UserAccount);
 
 watch(
   () => me.value?.root?.settings,
@@ -50,118 +50,119 @@ const colors = [
 ];
 const neutrals = ["slate", "gray", "zinc", "neutral", "stone"];
 
-const items = computed<DropdownMenuItem[][]>(() => [
-  [
-    {
-      type: "label",
-      label: "Settings",
-      icon: "i-lucide-cog",
-    },
-  ],
-  [
-    {
-      label: "Filters",
-      icon: "i-lucide-filter",
-      to: "/settings/filters",
-    },
-    {
-      label: "Accounts",
-      icon: "i-lucide-users",
-      to: "/settings/accounts",
-    },
-  ],
-  [
-    {
-      label: "Theme",
-      icon: "i-lucide-palette",
-      children: [
+const items = computed<DropdownMenuItem[][]>(
+  () =>
+    [
+      [
         {
-          label: "Primary",
-          slot: "chip",
-          chip: appConfig.ui.colors.primary,
-          content: {
-            align: "center",
-            collisionPadding: 16,
-          },
-          children: colors.map((color) => ({
-            label: color,
-            chip: color,
-            slot: "chip",
-            checked: appConfig.ui.colors.primary === color,
-            type: "checkbox",
-            onSelect: (e) => {
-              e.preventDefault();
-
-              appConfig.ui.colors.primary = color;
-              me.value?.root?.settings?.$jazz?.set("primaryColor", color);
-            },
-          })),
+          label: "Filters",
+          icon: "i-lucide-filter",
+          to: "/settings/filters",
         },
         {
-          label: "Neutral",
-          slot: "chip",
-          chip: appConfig.ui.colors.neutral === "neutral" ? "old-neutral" : appConfig.ui.colors.neutral,
-          content: {
-            align: "end",
-            collisionPadding: 16,
-          },
-          children: neutrals.map((color) => ({
-            label: color,
-            chip: color === "neutral" ? "old-neutral" : color,
-            slot: "chip",
-            type: "checkbox",
-            checked: appConfig.ui.colors.neutral === color,
-            onSelect: (e) => {
-              e.preventDefault();
-
-              appConfig.ui.colors.neutral = color;
-              me.value?.root?.settings?.$jazz?.set("neutralColor", color);
-            },
-          })),
+          label: "Accounts",
+          icon: "i-lucide-users",
+          to: "/settings/accounts",
         },
       ],
-    },
-    {
-      label: "Appearance",
-      icon: "i-lucide-sun-moon",
-      children: [
+      [
         {
-          label: "Light",
-          icon: "i-lucide-sun",
-          type: "checkbox",
-          checked: colorMode.value === "light",
-          onSelect(e: Event) {
-            e.preventDefault();
+          label: "Theme",
+          icon: "i-lucide-palette",
+          children: [
+            {
+              label: "Primary",
+              slot: "chip",
+              chip: appConfig.ui.colors.primary,
+              content: {
+                align: "center",
+                collisionPadding: 16,
+              },
+              children: colors.map((color) => ({
+                label: color,
+                chip: color,
+                slot: "chip",
+                checked: appConfig.ui.colors.primary === color,
+                type: "checkbox",
+                onSelect: (e) => {
+                  e.preventDefault();
 
-            colorMode.preference = "light";
-            me.value?.root?.settings?.$jazz?.set("colorMode", "light");
-          },
+                  appConfig.ui.colors.primary = color;
+                  me.value?.root?.settings?.$jazz?.set("primaryColor", color);
+                },
+              })),
+            },
+            {
+              label: "Neutral",
+              slot: "chip",
+              chip: appConfig.ui.colors.neutral === "neutral" ? "old-neutral" : appConfig.ui.colors.neutral,
+              content: {
+                align: "end",
+                collisionPadding: 16,
+              },
+              children: neutrals.map((color) => ({
+                label: color,
+                chip: color === "neutral" ? "old-neutral" : color,
+                slot: "chip",
+                type: "checkbox",
+                color,
+                checked: appConfig.ui.colors.neutral === color,
+                onSelect: (e) => {
+                  e.preventDefault();
+
+                  appConfig.ui.colors.neutral = color;
+                  me.value?.root?.settings?.$jazz?.set("neutralColor", color);
+                },
+              })),
+            },
+          ],
         },
         {
-          label: "Dark",
-          icon: "i-lucide-moon",
-          type: "checkbox",
-          checked: colorMode.value === "dark",
-          onUpdateChecked(checked: boolean) {
-            if (checked) {
-              colorMode.preference = "dark";
-              me.value?.root?.settings?.$jazz?.set("colorMode", "dark");
-            }
-          },
+          label: "Appearance",
+          icon: "i-lucide-sun-moon",
+          children: [
+            {
+              label: "Light",
+              icon: "i-lucide-sun",
+              type: "checkbox",
+              checked: colorMode.value === "light",
+              onSelect(e: Event) {
+                e.preventDefault();
+
+                colorMode.preference = "light";
+                me.value?.root?.settings?.$jazz?.set("colorMode", "light");
+              },
+            },
+            {
+              label: "Dark",
+              icon: "i-lucide-moon",
+              type: "checkbox",
+              checked: colorMode.value === "dark",
+              onUpdateChecked(checked: boolean) {
+                if (checked) {
+                  colorMode.preference = "dark";
+                  me.value?.root?.settings?.$jazz?.set("colorMode", "dark");
+                }
+              },
+              onSelect(e: Event) {
+                e.preventDefault();
+              },
+            },
+          ],
+        },
+      ],
+      [
+        {
+          label: "Log out",
+          icon: "i-lucide-log-out",
           onSelect(e: Event) {
             e.preventDefault();
+            logOut();
           },
         },
       ],
-    },
-  ],
-  [
-    {
-      label: "Log out",
-      icon: "i-lucide-log-out",
-    },
-  ],
-]);
+    ] satisfies DropdownMenuItem[][]
+);
 </script>
 
 <template>

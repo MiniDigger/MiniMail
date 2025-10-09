@@ -56,7 +56,7 @@ const emit = defineEmits<{
             <UInput v-model="state.username" class="w-48" />
           </UFormField>
           <UFormField label="Password" name="password">
-            <UInput type="password" v-model="state.password" class="w-48" />
+            <UInput v-model="state.password" type="password" class="w-48" />
           </UFormField>
         </UCard>
 

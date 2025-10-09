@@ -1,18 +1,39 @@
 <script lang="ts" setup>
 import { UserAccount } from "~/jazz/schema";
-import { JazzVueProvider, PasskeyAuthBasicUI } from "community-jazz-vue";
+import { JazzVueProviderWithClerk } from "community-jazz-vue";
+import { useClerk } from "@clerk/vue";
+import AuthWrapper from "~/components/AuthWrapper.vue";
 
-import "jazz-tools/inspector/register-custom-element";
+// import "jazz-tools/inspector/register-custom-element";
+
+const {
+  public: { jazzServerUrl, jazzApiKey },
+} = useRuntimeConfig();
+const peer = (jazzServerUrl + (jazzApiKey ? `?key=${jazzApiKey}` : "")) as "wss://${string}";
+
+const clerk = useClerk();
 </script>
 
 <template>
-  <JazzVueProvider
+  <JazzVueProviderWithClerk
+    v-if="clerk"
     :AccountSchema="UserAccount"
-    :sync="{ peer: 'wss://cloud.jazz.tools/?key=jazz@benndorf.dev', when: 'signedUp' }"
-    :guestMode="false"
+    :sync="{ peer, when: 'signedUp' }"
+    :guest-mode="false"
+    :clerk
   >
-    <PasskeyAuthBasicUI appName="Test">
+    <AuthWrapper>
       <slot />
-    </PasskeyAuthBasicUI>
-  </JazzVueProvider>
+      <!--    <component-->
+      <!--      :is="-->
+      <!--        h('jazz-inspector', {-->
+      <!--          style: { position: 'fixed', bottom: '20px', left: '20px', zIndex: 9999 },-->
+      <!--        })-->
+      <!--      "-->
+      <!--    />-->
+    </AuthWrapper>
+  </JazzVueProviderWithClerk>
+  <div v-else>
+    <p>Loading Clerk...</p>
+  </div>
 </template>
