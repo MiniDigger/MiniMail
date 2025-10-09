@@ -9,7 +9,7 @@ const {
     actions: [{ type: "move to folder", value: "" }],
   },
 } = defineProps<{
-  filter: FilterType;
+  filter?: FilterType;
 }>();
 
 const state = reactive<FilterType>(JSON.parse(JSON.stringify(filter)));
@@ -34,8 +34,8 @@ function deleteAction(idx: number) {
 </script>
 
 <template>
-  <UModal>
-    <template #content>
+  <UModal :title="'Edit Filter ' + filter?.name" description="dum">
+    <template #body>
       <UForm :schema="Filter" :state="state" class="space-y-4 p-4 overflow-y-auto" @submit="emit('close', $event.data)">
         <UFormField label="Name" name="name">
           <UInput v-model="state.name" class="w-48" />

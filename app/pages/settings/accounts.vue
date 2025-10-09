@@ -39,9 +39,13 @@ async function remove(account: AccountLoaded) {
   <UContainer class="w-128">
     <div class="space-y-4">
       <div v-for="account in me?.root?.accounts" class="grid grid-cols-[1fr_48px_70px] gap-4">
-        <p>{{ account?.name }} ({{ account?.email }})</p>
-        <UButton @click="edit(account)">Edit</UButton>
-        <UButton @click="remove(account)">Remove</UButton>
+        <template v-if="account">
+          <!--suppress HtmlUnknownTarget -->
+          <NuxtLink :to="'/mail/' + account.email">{{ account.name }} ({{ account.email }})</NuxtLink>
+          <UButton @click="edit(account)">Edit</UButton>
+          <UButton @click="remove(account)">Remove</UButton>
+        </template>
+        <span v-else>Loading...</span>
       </div>
     </div>
     <UButton @click="createNew">New</UButton>

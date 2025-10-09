@@ -7,7 +7,7 @@ const {
     email: "dummy@test",
   },
 } = defineProps<{
-  account: AccountType;
+  account?: AccountType;
 }>();
 const state = reactive<AccountType>(JSON.parse(JSON.stringify(toRaw(account))));
 
@@ -17,8 +17,8 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <UModal>
-    <template #content>
+  <UModal :title="'Edit Account ' + account?.name + ' (' + account?.email + ')'" description="dum">
+    <template #body>
       <UForm
         :schema="Account._schema"
         :state="state"
