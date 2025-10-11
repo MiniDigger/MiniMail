@@ -12,5 +12,8 @@ export default defineNuxtPlugin((nuxtApp) => {
   nuxtApp.vueApp.use(clerkPlugin, {
     publishableKey: clerkPubKey,
     afterSignOutUrl: "/",
+    telemetry: false,
+    // clerkJSUrl: "/_nuxt/clerk/clerk.js",
+    // clerkJSVersion: "latest",
   });
 });

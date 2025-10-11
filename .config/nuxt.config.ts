@@ -27,12 +27,23 @@ export default defineNuxtConfig({
       autoInit: false,
     },
   },
+  typescript: {
+    tsConfig: {
+      compilerOptions: {
+        lib: ["webworker"],
+      },
+    },
+  },
   pwa: {
     mode: "development",
     devOptions: {
       enabled: true,
+      type: "module",
     },
-    strategies: "generateSW",
+    srcDir: ".",
+    filename: "sw.ts",
+    strategies: "injectManifest",
+    // strategies: "generateSW",
     registerType: "autoUpdate",
     manifest: {
       theme_color: "#1e293b",
