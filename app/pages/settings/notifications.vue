@@ -33,6 +33,7 @@ async function registerForPushNotifications() {
     console.log("wait for service worker to be ready");
     const sw = await navigator.serviceWorker.ready;
     const sub = await sw.pushManager.getSubscription();
+    let device = undefined as DeviceType;
     if (sub == null) {
       console.log("No subscription found");
       const {
@@ -43,24 +44,26 @@ async function registerForPushNotifications() {
         applicationServerKey: webPushPublicKey,
       });
       console.log("New subscription:", newSub);
-      me.value?.root?.devices?.$jazz?.push({
+      device = {
         name: deviceName.value,
         pushRegistration: newSub,
-      });
+      };
+      me.value?.root?.devices?.$jazz?.push(device);
     } else {
       console.log("Existing subscription:", sub);
       console.log(JSON.stringify(sub));
-      const device = me.value?.root?.devices?.find((d) => d?.pushRegistration?.endpoint === sub.endpoint);
+      device = me.value?.root?.devices?.find((d) => d?.pushRegistration?.endpoint === sub.endpoint);
       if (device) {
-        device.$jazz?.set("name", deviceName.value);
+        device?.$jazz?.set("name", deviceName.value);
       } else {
-        me.value?.root?.devices?.$jazz?.push({
+        device = {
           name: deviceName.value,
           pushRegistration: sub,
-        });
+        };
+        me.value?.root?.devices?.$jazz?.push(device);
       }
     }
-    // TODO send test notification
+    await test(device);
   } else {
     toast.add({
       title: "Error",
@@ -75,6 +78,19 @@ async function remove(device: DeviceType) {
   if (confirm(`Are you sure you want to delete the device ${device?.name}? It will no longer recieve notifications.`)) {
     me.value?.root?.devices?.$jazz?.remove((f) => f?.name === device?.name);
   }
+}
+
+async function test(device: DeviceType) {
+  await fetch("/api/send-push", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      registration: device?.pushRegistration,
+      payload: { title: "Test Notification", content: "This is a test" },
+    }),
+  });
 }
 </script>
 
@@ -99,8 +115,9 @@ async function remove(device: DeviceType) {
     </div>
     <div class="border-b border-default p-4 sm:px-6">
       <div class="space-y-4">
-        <div v-for="device in me?.root?.devices" class="grid grid-cols-[1fr_70px] gap-4">
+        <div v-for="device in me?.root?.devices" class="grid grid-cols-[1fr_55px_70px] gap-4">
           <div>{{ device?.name }} - {{ device?.pushRegistration?.endpoint?.substring(0, 40) + "..." }}</div>
+          <UButton @click="test(device)">Test</UButton>
           <UButton @click="remove(device)">Remove</UButton>
         </div>
       </div>
