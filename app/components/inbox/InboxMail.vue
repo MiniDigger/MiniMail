@@ -1,13 +1,11 @@
 <script setup lang="ts">
 import type { Mail } from "~~/server/services/mail.types";
 import RelativeDate from "~/components/RelativeDate.vue";
+import { selectedMailId } from "~/store";
 
-defineProps<{
+const { mail } = defineProps<{
   mail: Mail;
 }>();
-
-const router = useRouter();
-const route = useRoute();
 
 const dropdownItems = [
   [
@@ -32,6 +30,8 @@ const dropdownItems = [
   ],
 ];
 
+console.log("inbox mail", mail);
+
 const toast = useToast();
 
 const reply = ref("");
@@ -55,7 +55,7 @@ function onSubmit() {
 }
 
 async function close() {
-  await router.push(`/mail/${route.params.account}/${route.params.folder}`);
+  selectedMailId.value = undefined;
 }
 </script>
 

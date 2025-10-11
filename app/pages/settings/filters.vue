@@ -35,14 +35,23 @@ async function remove(filter: FilterType) {
 </script>
 
 <template>
-  <UContainer class="w-128">
-    <div class="space-y-4">
-      <div v-for="filter in me?.root?.filters" class="grid grid-cols-[1fr_48px_70px] gap-4">
-        <p>{{ filter.name }}</p>
-        <UButton @click="edit(filter)">Edit</UButton>
-        <UButton @click="remove(filter)">Remove</UButton>
+  <UDashboardPanel id="accounts">
+    <UDashboardNavbar title="Accounts">
+      <template #leading>
+        <UDashboardSidebarCollapse />
+      </template>
+    </UDashboardNavbar>
+    <div class="border-b border-default p-4 sm:px-6">
+      <div class="w-128 mx-auto">
+        <div class="space-y-4">
+          <div v-for="filter in me?.root?.filters" class="grid grid-cols-[1fr_48px_70px] gap-4">
+            <p>{{ filter.name }}</p>
+            <UButton @click="edit(filter)">Edit</UButton>
+            <UButton @click="remove(filter)">Remove</UButton>
+          </div>
+        </div>
+        <UButton @click="createNew">New</UButton>
       </div>
     </div>
-    <UButton @click="createNew">New</UButton>
-  </UContainer>
+  </UDashboardPanel>
 </template>

@@ -1,39 +1,84 @@
-<script lang="ts" setup>
-import { UserAccount } from "~/jazz/schema";
-import { JazzVueProviderWithClerk } from "community-jazz-vue";
-import { useClerk } from "@clerk/vue";
-import AuthWrapper from "~/components/AuthWrapper.vue";
+<script setup lang="ts">
+import type { NavigationMenuItem } from "@nuxt/ui";
+import AccountMenu from "~/components/layout/AccountMenu.vue";
+import SettingsMenu from "~/components/layout/SettingsMenu.vue";
+import { selectedAccount, selectedFolder } from "~/store";
 
-// import "jazz-tools/inspector/register-custom-element";
+const open = ref(false);
 
-const {
-  public: { jazzServerUrl, jazzApiKey },
-} = useRuntimeConfig();
-const peer = (jazzServerUrl + (jazzApiKey ? `?key=${jazzApiKey}` : "")) as "wss://${string}";
-
-const clerk = useClerk();
+const { data: folders } = await useFetch(() => `/api/mail/${selectedAccount.value}/folders`, {
+  default: () => [],
+});
+const links = computed(
+  () =>
+    [
+      // TODO properly nest these
+      // TODO list folders per account here
+      [
+        ...(folders.value?.map((folder) => ({
+          label: folder.name,
+          icon: "i-lucide-house",
+          active: selectedFolder.value === folder,
+          onSelect() {
+            selectedFolder.value = folder;
+          },
+        })) || []),
+      ],
+    ] satisfies NavigationMenuItem[][]
+);
+const groups = computed(() => [
+  {
+    id: "links",
+    label: "Go to",
+    items: links.value.flat(),
+  },
+  {
+    id: "settings",
+    label: "Settings",
+    items: [
+      {
+        label: "Filters",
+        icon: "i-lucide-filter",
+        to: "/settings/filters",
+      },
+      {
+        label: "Inboxes",
+        icon: "i-lucide-cog",
+        to: "/settings/accounts",
+      },
+    ],
+  },
+]);
 </script>
-
 <template>
-  <JazzVueProviderWithClerk
-    v-if="clerk"
-    :AccountSchema="UserAccount"
-    :sync="{ peer, when: 'signedUp' }"
-    :guest-mode="false"
-    :clerk
-  >
-    <AuthWrapper>
-      <slot />
-      <!--    <component-->
-      <!--      :is="-->
-      <!--        h('jazz-inspector', {-->
-      <!--          style: { position: 'fixed', bottom: '20px', left: '20px', zIndex: 9999 },-->
-      <!--        })-->
-      <!--      "-->
-      <!--    />-->
-    </AuthWrapper>
-  </JazzVueProviderWithClerk>
-  <div v-else>
-    <p>Loading Clerk...</p>
-  </div>
+  <UDashboardGroup unit="rem">
+    <UDashboardSidebar
+      id="default"
+      v-model:open="open"
+      collapsible
+      resizable
+      class="bg-elevated/25"
+      :ui="{ footer: 'lg:border-t lg:border-default' }"
+    >
+      <template #header="{ collapsed }">
+        <AccountMenu :collapsed />
+      </template>
+
+      <template #default="{ collapsed }">
+        <UDashboardSearchButton :collapsed class="bg-transparent ring-default" />
+
+        <UNavigationMenu :collapsed :items="links[0]" orientation="vertical" tooltip popover />
+
+        <UNavigationMenu :collapsed :items="links[1]" orientation="vertical" tooltip class="mt-auto" />
+      </template>
+
+      <template #footer="{ collapsed }">
+        <SettingsMenu :collapsed />
+      </template>
+    </UDashboardSidebar>
+
+    <UDashboardSearch :groups />
+
+    <slot />
+  </UDashboardGroup>
 </template>

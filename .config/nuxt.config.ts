@@ -14,7 +14,7 @@ export default defineNuxtConfig({
       "*/5 * * * *": ["filters:run"],
     },
     prerender: {
-      routes: ["/pwatest", "/settings/accounts", "/settings/filters"],
+      routes: ["/", "/pwatest", "/settings/accounts", "/settings/filters", "/settings/notifications"],
     },
   },
   experimental: {

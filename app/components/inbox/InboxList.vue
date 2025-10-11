@@ -1,24 +1,23 @@
 <script setup lang="ts">
 import type { Mail } from "~~/server/services/mail.types";
 import RelativeDate from "~/components/RelativeDate.vue";
+import { selectedAccount, selectedMailId } from "~/store";
 
 const props = defineProps<{
   mails: Mail[];
 }>();
 
-const router = useRouter();
-const route = useRoute("account-folder-mail");
 const mailsRefs = ref<Record<string, Element>>({});
 
 const selectedMail = computed({
   get: () => {
-    return props.mails.find((mail) => mail.seq === route.params.mail) || null;
+    return props.mails.find((mail) => mail.seq === selectedMailId.value) || null;
   },
   async set(mail: Mail | undefined) {
     if (mail) {
-      await router.push(`/mail/${route.params.account}/${route.params.folder}/${mail.seq}`);
+      selectedMailId.value = mail.seq;
     } else {
-      await router.push(`/mail/${route.params.account}/${route.params.folder}`);
+      selectedMailId.value = undefined;
     }
   },
 });

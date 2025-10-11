@@ -2,13 +2,8 @@
 import type { DropdownMenuItem } from "@nuxt/ui";
 import { useAccount } from "community-jazz-vue";
 import { UserAccount } from "~/jazz/schema";
+import { selectedAccount } from "~/store";
 
-interface Account {
-  label: string;
-}
-
-const router = useRouter();
-const route = useRoute();
 const { me } = useAccount(UserAccount);
 
 defineProps<{
@@ -20,7 +15,7 @@ const items = computed<DropdownMenuItem[][]>(() => {
     me.value?.root?.accounts?.map((account) => ({
       label: account?.email,
       async onSelect() {
-        await router.push("/mail/" + account?.email);
+        selectedAccount.value = account?.email;
       },
     })),
     [
@@ -49,7 +44,7 @@ const items = computed<DropdownMenuItem[][]>(() => {
   >
     <UButton
       v-bind="{
-        label: collapsed ? undefined : route.params.account + '',
+        label: collapsed ? undefined : selectedAccount || 'Select account...',
         trailingIcon: collapsed ? undefined : 'i-lucide-chevrons-up-down',
       }"
       color="neutral"

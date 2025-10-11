@@ -36,18 +36,27 @@ async function remove(account: AccountLoaded) {
 </script>
 
 <template>
-  <UContainer class="w-128">
-    <div class="space-y-4">
-      <div v-for="account in me?.root?.accounts" class="grid grid-cols-[1fr_48px_70px] gap-4">
-        <template v-if="account">
-          <!--suppress HtmlUnknownTarget -->
-          <NuxtLink :to="'/mail/' + account.email">{{ account.name }} ({{ account.email }})</NuxtLink>
-          <UButton @click="edit(account)">Edit</UButton>
-          <UButton @click="remove(account)">Remove</UButton>
-        </template>
-        <span v-else>Loading...</span>
+  <UDashboardPanel id="accounts">
+    <UDashboardNavbar title="Accounts">
+      <template #leading>
+        <UDashboardSidebarCollapse />
+      </template>
+    </UDashboardNavbar>
+    <div class="border-b border-default p-4 sm:px-6">
+      <div class="w-128 mx-auto">
+        <div class="space-y-4">
+          <div v-for="account in me?.root?.accounts" class="grid grid-cols-[1fr_48px_70px] gap-4">
+            <template v-if="account">
+              <!--suppress HtmlUnknownTarget -->
+              <NuxtLink :to="'/mail/' + account.email">{{ account.name }} ({{ account.email }})</NuxtLink>
+              <UButton @click="edit(account)">Edit</UButton>
+              <UButton @click="remove(account)">Remove</UButton>
+            </template>
+            <span v-else>Loading...</span>
+          </div>
+        </div>
+        <UButton @click="createNew">New</UButton>
       </div>
     </div>
-    <UButton @click="createNew">New</UButton>
-  </UContainer>
+  </UDashboardPanel>
 </template>

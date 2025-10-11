@@ -1,4 +1,17 @@
 <script setup lang="ts">
+import { UserAccount } from "~/jazz/schema";
+import { JazzVueProviderWithClerk } from "community-jazz-vue";
+import { useClerk } from "@clerk/vue";
+import AuthWrapper from "~/components/layout/AuthWrapper.vue";
+import PWAToast from "~/components/layout/PWAToast.vue";
+
+const {
+  public: { jazzServerUrl, jazzApiKey },
+} = useRuntimeConfig();
+const peer = (jazzServerUrl + (jazzApiKey ? `?key=${jazzApiKey}` : "")) as "wss://${string}";
+
+const clerk = useClerk();
+
 useSeoMeta({
   title: "MiniMail",
   robots: "noindex, nofollow",
@@ -10,11 +23,24 @@ useSeoMeta({
     <NuxtPwaAssets />
     <NuxtRouteAnnouncer />
     <NuxtLoadingIndicator />
-    <UpdateServerWorker />
     <UApp>
-      <NuxtLayout>
-        <NuxtPage />
-      </NuxtLayout>
+      <JazzVueProviderWithClerk
+        v-if="clerk"
+        :AccountSchema="UserAccount"
+        :sync="{ peer, when: 'signedUp' }"
+        :guest-mode="false"
+        :clerk
+      >
+        <AuthWrapper>
+          <NuxtLayout>
+            <NuxtPage />
+            <PWAToast />
+          </NuxtLayout>
+        </AuthWrapper>
+      </JazzVueProviderWithClerk>
+      <div v-else>
+        <p>Loading Clerk...</p>
+      </div>
     </UApp>
   </div>
 </template>

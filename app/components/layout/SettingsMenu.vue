@@ -64,6 +64,11 @@ const items = computed<DropdownMenuItem[][]>(
           icon: "i-lucide-users",
           to: "/settings/accounts",
         },
+        {
+          label: "Notifications",
+          icon: "i-lucide-bell",
+          to: "/settings/notifications",
+        },
       ],
       [
         {
