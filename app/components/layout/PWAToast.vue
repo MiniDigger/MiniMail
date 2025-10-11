@@ -8,13 +8,6 @@
       <button v-if="$pwa.needRefresh" @click="$pwa.updateServiceWorker()">Reload</button>
       <button @click="$pwa.cancelPrompt()">Close</button>
     </div>
-    <div v-if="$pwa?.showInstallPrompt && !$pwa?.offlineReady && !$pwa?.needRefresh" class="pwa-toast" role="alert">
-      <div class="message">
-        <span> Install PWA </span>
-      </div>
-      <button @click="$pwa.install()">Install</button>
-      <button @click="$pwa.cancelInstall()">Cancel</button>
-    </div>
   </ClientOnly>
 </template>
 

@@ -42,10 +42,17 @@ export const Account = co.map({
 export type AccountType = z.infer<typeof Account>;
 export type AccountLoaded = co.loaded<typeof Account>;
 
+export const Device = co.map({
+  name: z.string(),
+  pushRegistration: z.object(),
+});
+export type DeviceType = z.infer<typeof Device>;
+
 export const MiniMailRoot = co
   .map({
     filters: co.list(Filter),
     accounts: co.list(Account),
+    devices: co.list(Device),
     settings: Settings,
   })
   .withMigration((root) => {
@@ -54,6 +61,9 @@ export const MiniMailRoot = co
     }
     if (!root.$jazz.has("accounts")) {
       root.$jazz.set("accounts", []);
+    }
+    if (!root.$jazz.has("devices")) {
+      root.$jazz.set("devices", []);
     }
     if (!root.$jazz.has("settings")) {
       root.$jazz.set("settings", {
@@ -74,6 +84,12 @@ export const UserAccount = co
       account.$jazz.set("root", {
         filters: [],
         accounts: [],
+        devices: [],
+        settings: {
+          colorMode: "system",
+          primaryColor: "blue",
+          neutralColor: "slate",
+        },
       });
     }
   });

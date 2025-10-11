@@ -55,6 +55,11 @@ const items = computed<DropdownMenuItem[][]>(
     [
       [
         {
+          label: "Home - Remove Me again!",
+          icon: "i-lucide-home",
+          to: "/",
+        },
+        {
           label: "Filters",
           icon: "i-lucide-filter",
           to: "/settings/filters",
