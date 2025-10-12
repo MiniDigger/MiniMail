@@ -39,14 +39,13 @@ export const Account = co.map({
   username: z.string(),
   password: z.string(), // TODO how to do this better?
 });
-export type AccountType = z.infer<typeof Account>;
-export type AccountLoaded = co.loaded<typeof Account>;
+export type AccountType = co.loaded<typeof Account>;
 
 export const Device = co.map({
   name: z.string(),
-  pushRegistration: z.object(),
+  pushRegistration: z.object() as unknown as PushSubscription,
 });
-export type DeviceType = z.infer<typeof Device>;
+export type DeviceType = co.loaded<typeof Device>;
 
 export const MiniMailRoot = co
   .map({

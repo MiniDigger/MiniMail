@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useAccount } from "community-jazz-vue";
-import { type FilterType, UserAccount } from "~/jazz/schema";
+import { type FilterType, UserAccount } from "#shared/schema";
 import { EditFilterModal } from "#components";
 
 const { me } = useAccount(UserAccount);

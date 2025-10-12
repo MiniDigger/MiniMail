@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { useAccount } from "community-jazz-vue";
-import { type AccountLoaded, type AccountType, type DeviceType, type FilterType, UserAccount } from "~/jazz/schema";
-import { EditAccountModal } from "#components";
+import { type DeviceType, UserAccount } from "#shared/schema";
 
 const { me } = useAccount(UserAccount);
 const pwa = usePWA();
@@ -33,7 +32,7 @@ async function registerForPushNotifications() {
     console.log("wait for service worker to be ready");
     const sw = await navigator.serviceWorker.ready;
     const sub = await sw.pushManager.getSubscription();
-    let device = undefined as DeviceType;
+    let device: DeviceType;
     if (sub == null) {
       console.log("No subscription found");
       const {
@@ -52,8 +51,9 @@ async function registerForPushNotifications() {
     } else {
       console.log("Existing subscription:", sub);
       console.log(JSON.stringify(sub));
-      device = me.value?.root?.devices?.find((d) => d?.pushRegistration?.endpoint === sub.endpoint);
-      if (device) {
+      const newDevice = me.value?.root?.devices?.find((d) => d?.pushRegistration?.endpoint === sub.endpoint);
+      if (newDevice) {
+        device = newDevice;
         device?.$jazz?.set("name", deviceName.value);
       } else {
         device = {
@@ -116,9 +116,11 @@ async function test(device: DeviceType) {
     <div class="border-b border-default p-4 sm:px-6">
       <div class="space-y-4">
         <div v-for="device in me?.root?.devices" class="grid grid-cols-[1fr_55px_70px] gap-4">
-          <div>{{ device?.name }} - {{ device?.pushRegistration?.endpoint?.substring(0, 40) + "..." }}</div>
-          <UButton @click="test(device)">Test</UButton>
-          <UButton @click="remove(device)">Remove</UButton>
+          <template v-if="device">
+            <div>{{ device.name }} - {{ device.pushRegistration?.endpoint?.substring(0, 40) + "..." }}</div>
+            <UButton @click="test(device)">Test</UButton>
+            <UButton @click="remove(device)">Remove</UButton>
+          </template>
         </div>
       </div>
     </div>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { DropdownMenuItem } from "@nuxt/ui";
 import { useAccount } from "community-jazz-vue";
-import { UserAccount } from "~/jazz/schema";
+import { UserAccount } from "#shared/schema";
 
 defineProps<{
   collapsed?: boolean;
@@ -47,8 +47,8 @@ const colors = [
   "fuchsia",
   "pink",
   "rose",
-];
-const neutrals = ["slate", "gray", "zinc", "neutral", "stone"];
+] as const;
+const neutrals = ["slate", "gray", "zinc", "neutral", "stone"] as const;
 
 const items = computed<DropdownMenuItem[][]>(
   () =>

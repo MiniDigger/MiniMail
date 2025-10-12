@@ -7,4 +7,4 @@ export const selectedFolderAsString = computed(() => {
   if (!selectedFolder.value) return undefined;
   return [...selectedFolder.value.path, selectedFolder.value.name].join(".");
 });
-export const selectedMailId = ref<string>();
+export const selectedMailId = ref<number>();

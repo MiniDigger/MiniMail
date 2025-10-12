@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { UserAccount } from "~/jazz/schema";
 import { JazzVueProviderWithClerk } from "community-jazz-vue";
 import { useClerk } from "@clerk/vue";
 import AuthWrapper from "~/components/layout/AuthWrapper.vue";
 import PWAToast from "~/components/layout/PWAToast.vue";
+import { UserAccount } from "#shared/schema";
 
 const {
   public: { jazzServerUrl, jazzApiKey },

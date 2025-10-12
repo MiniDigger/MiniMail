@@ -13,7 +13,8 @@
     "postinstall": "nuxt prepare",
     "lint": "bun run lint:eslint && bun run lint:prettier",
     "lint:eslint": "eslint --config .config/eslint.config.mjs . --fix",
-    "lint:prettier": "prettier --ignore-path .config/.prettierignore --ignore-path .gitignore --write --list-different ."
+    "lint:prettier": "prettier --ignore-path .config/.prettierignore --ignore-path .gitignore --write --list-different .",
+    "lint:typecheck": "nuxt typecheck"
   },
   "dependencies": {
     "@clerk/vue": "1.14.3",

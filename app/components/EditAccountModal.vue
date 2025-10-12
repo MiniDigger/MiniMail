@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { type AccountType, Condition, Account } from "~/jazz/schema";
+import { type AccountType, Account } from "#shared/schema";
 
 const {
   account = {

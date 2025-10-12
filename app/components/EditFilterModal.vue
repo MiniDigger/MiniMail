@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Filter, type FilterType, Condition } from "~/jazz/schema";
+import { Filter, type FilterType, Condition } from "#shared/schema";
 
 const {
   filter = {

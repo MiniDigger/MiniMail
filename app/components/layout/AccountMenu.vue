@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { DropdownMenuItem } from "@nuxt/ui";
 import { useAccount } from "community-jazz-vue";
-import { UserAccount } from "~/jazz/schema";
+import { UserAccount } from "#shared/schema";
 import { selectedAccount } from "~/store";
 
 const { me } = useAccount(UserAccount);
@@ -12,12 +12,15 @@ defineProps<{
 
 const items = computed<DropdownMenuItem[][]>(() => {
   return [
-    me.value?.root?.accounts?.map((account) => ({
-      label: account?.email,
-      async onSelect() {
-        selectedAccount.value = account?.email;
-      },
-    })),
+    me.value?.root?.accounts?.map(
+      (account) =>
+        ({
+          label: account?.email,
+          async onSelect() {
+            selectedAccount.value = account?.email;
+          },
+        }) satisfies DropdownMenuItem
+    ) || [],
     [
       {
         label: "Add account",
@@ -29,7 +32,7 @@ const items = computed<DropdownMenuItem[][]>(() => {
         icon: "i-lucide-cog",
         to: "/settings/accounts",
       },
-    ],
+    ] satisfies DropdownMenuItem[],
   ];
 });
 </script>

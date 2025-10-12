@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { useAccount } from "community-jazz-vue";
-import { type AccountLoaded, type AccountType, UserAccount } from "~/jazz/schema";
+import { type AccountType, UserAccount } from "#shared/schema";
 import { EditAccountModal } from "#components";
 
 const { me } = useAccount(UserAccount);
@@ -10,13 +10,13 @@ const modal = overlay.create(EditAccountModal);
 
 async function createNew() {
   const instance = modal.open();
-  const account = await instance.result;
+  const account = (await instance.result) as AccountType | undefined;
   if (account) {
     me.value?.root?.accounts?.$jazz?.push(account);
   }
 }
 
-async function edit(account: AccountLoaded) {
+async function edit(account: AccountType) {
   const instance = modal.open({ account });
   const updatedAccount = await instance.result;
   if (updatedAccount && account !== updatedAccount) {
@@ -24,13 +24,13 @@ async function edit(account: AccountLoaded) {
   }
 }
 
-async function remove(account: AccountLoaded) {
+async function remove(account: AccountType) {
   if (
     confirm(
       `Are you sure you want to delete the account ${account.name} (${account.email})? This action cannot be undone.`
     )
   ) {
-    me.value?.root?.accounts?.$jazz?.remove((a) => a.$jazz.id === account.$jazz.id);
+    me.value?.root?.accounts?.$jazz?.remove((a) => a?.$jazz?.id === account.$jazz.id);
   }
 }
 </script>
