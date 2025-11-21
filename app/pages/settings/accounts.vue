@@ -4,7 +4,7 @@ import { getLoadedOrUndefined } from "jazz-tools";
 import { type AccountType, UserAccount } from "#shared/schema";
 import { EditAccountModal } from "#components";
 
-const me = useAccount(UserAccount);
+const me = useAccount(UserAccount, { resolve: { root: { accounts: { $each: true } } } });
 
 const overlay = useOverlay();
 const modal = overlay.create(EditAccountModal);
@@ -45,13 +45,13 @@ async function remove(account: AccountType) {
     </UDashboardNavbar>
     <div class="border-b border-default p-4 sm:px-6">
       <div class="w-lg mx-auto">
-        <div class="space-y-4" v-if="me?.$isLoaded">
+        <div v-if="me?.$isLoaded" class="space-y-4">
           <div
             v-for="account in me.root?.accounts"
-            class="grid grid-cols-[1fr_48px_70px] gap-4"
             :key="account.$jazz.id"
+            class="grid grid-cols-[1fr_48px_70px] gap-4"
           >
-            <template v-if="account">
+            <template v-if="account?.$isLoaded">
               <!--suppress HtmlUnknownTarget -->
               <NuxtLink :to="'/mail/' + account.email">{{ account.name }} ({{ account.email }})</NuxtLink>
               <UButton @click="edit(account)">Edit</UButton>

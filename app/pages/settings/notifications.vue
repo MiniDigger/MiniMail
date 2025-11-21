@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 import { experimental_useInboxSender, useAccount } from "community-jazz-vue";
-import { type DeviceType, UserAccount, UserStatusMessage } from "#shared/schema";
+import { type DeviceType, Device, UserAccount, UserStatusMessage } from "#shared/schema";
 import { getLoadedOrUndefined } from "jazz-tools";
 
-const me = useAccount(UserAccount);
+const me = useAccount(UserAccount, { resolve: { root: { devices: { $each: true } } } });
 const pwa = usePWA();
 const deviceName = ref("New Device");
 const toast = useToast();
@@ -47,10 +47,10 @@ async function registerForPushNotifications() {
         applicationServerKey: webPushPublicKey,
       });
       console.log("New subscription:", newSub);
-      device = {
+      device = Device.create({
         name: deviceName.value,
-        pushRegistration: newSub,
-      };
+        pushRegistration: newSub.toJSON() as DeviceType["pushRegistration"],
+      });
       getLoadedOrUndefined(me.value)?.root?.devices?.$jazz?.push(device);
     } else {
       console.log("Existing subscription:", sub);
@@ -62,10 +62,10 @@ async function registerForPushNotifications() {
         device = newDevice;
         device?.$jazz?.set("name", deviceName.value);
       } else {
-        device = {
+        device = Device.create({
           name: deviceName.value,
-          pushRegistration: sub,
-        };
+          pushRegistration: sub.toJSON() as DeviceType["pushRegistration"],
+        });
         getLoadedOrUndefined(me.value)?.root?.devices?.$jazz?.push(device);
       }
     }
@@ -135,9 +135,9 @@ async function changeUserStatus() {
       </div>
     </div>
     <div class="border-b border-default p-4 sm:px-6">
-      <div class="space-y-4" v-if="me?.$isLoaded">
-        <div v-for="device in me?.root?.devices" class="grid grid-cols-[1fr_55px_70px] gap-4">
-          <template v-if="device">
+      <div v-if="me?.$isLoaded" class="space-y-4">
+        <div v-for="device in me?.root?.devices" :key="device.$jazz.id" class="grid grid-cols-[1fr_55px_70px] gap-4">
+          <template v-if="device?.$isLoaded">
             <div>{{ device.name }} - {{ device.pushRegistration?.endpoint?.substring(0, 40) + "..." }}</div>
             <UButton @click="test(device)">Test</UButton>
             <UButton @click="remove(device)">Remove</UButton>

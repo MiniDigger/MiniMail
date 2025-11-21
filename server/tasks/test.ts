@@ -1,6 +1,6 @@
-import { startWorker } from "jazz-tools/worker";
-import { MiniMailRoot, WorkerAccount } from "#shared/schema";
-import webpush from "web-push";
+import { MiniMailRoot } from "#shared/schema";
+import webpush, { type PushSubscription } from "web-push";
+import { getLoadedOrUndefined } from "jazz-tools";
 import { useJazzWorker } from "~~/server/services/jazz";
 
 export default defineTask({
@@ -8,7 +8,7 @@ export default defineTask({
     name: "test",
     description: "test",
   },
-  async run({ payload, context }) {
+  async run() {
     const test = await MiniMailRoot.load("co_zGJK5onTy2jD5CMyrduQym8bnym", {
       loadAs: await useJazzWorker(),
       resolve: {
@@ -25,16 +25,22 @@ export default defineTask({
     });
 
     const config = useRuntimeConfig();
-    test?.devices?.forEach((d) => {
+    getLoadedOrUndefined(test)?.devices?.forEach((d) => {
       webpush.setVapidDetails(
         "https://minimail.benndorf.dev",
         config.public.webPushPublicKey,
         config.webPushPrivateKey
       );
 
-      webpush.sendNotification(d!.pushRegistration, JSON.stringify({ title: "woo", content: "woooooooo" }), {
-        urgency: "high",
-      });
+      if (!d.$isLoaded) return;
+
+      webpush.sendNotification(
+        d.pushRegistration as PushSubscription,
+        JSON.stringify({ title: "woo", content: "woooooooo" }),
+        {
+          urgency: "high",
+        }
+      );
     });
 
     return { result: test };

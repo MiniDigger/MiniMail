@@ -10,11 +10,11 @@ defineProps<{
 
 const colorMode = useColorMode();
 const appConfig = useAppConfig();
-const me = useAccount(UserAccount);
+const me = useAccount(UserAccount, { resolve: { root: { settings: true } } });
 const logout = useLogOut();
 
 watch(
-  () => getLoadedOrUndefined(getLoadedOrUndefined(me.value)?.root?.settings),
+  () => getLoadedOrUndefined(me.value)?.root?.settings,
   (settings) => {
     if (settings) {
       if (settings.$jazz.has("colorMode")) {
@@ -100,7 +100,7 @@ const items = computed<DropdownMenuItem[][]>(
                   e.preventDefault();
 
                   appConfig.ui.colors.primary = color;
-                  me.value?.root?.settings?.$jazz?.set("primaryColor", color);
+                  getLoadedOrUndefined(me.value)?.root?.settings?.$jazz?.set("primaryColor", color);
                 },
               })),
             },
@@ -123,11 +123,11 @@ const items = computed<DropdownMenuItem[][]>(
                   e.preventDefault();
 
                   appConfig.ui.colors.neutral = color;
-                  me.value?.root?.settings?.$jazz?.set("neutralColor", color);
+                  getLoadedOrUndefined(me.value)?.root?.settings?.$jazz?.set("neutralColor", color);
                 },
               })),
             },
-          ],
+          ] as DropdownMenuItem[],
         },
         {
           label: "Appearance",
@@ -142,7 +142,7 @@ const items = computed<DropdownMenuItem[][]>(
                 e.preventDefault();
 
                 colorMode.preference = "light";
-                me.value?.root?.settings?.$jazz?.set("colorMode", "light");
+                getLoadedOrUndefined(me.value)?.root?.settings?.$jazz?.set("colorMode", "light");
               },
             },
             {
@@ -153,7 +153,7 @@ const items = computed<DropdownMenuItem[][]>(
               onUpdateChecked(checked: boolean) {
                 if (checked) {
                   colorMode.preference = "dark";
-                  me.value?.root?.settings?.$jazz?.set("colorMode", "dark");
+                  getLoadedOrUndefined(me.value)?.root?.settings?.$jazz?.set("colorMode", "dark");
                 }
               },
               onSelect(e: Event) {

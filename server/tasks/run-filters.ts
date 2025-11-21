@@ -3,7 +3,7 @@ export default defineTask({
     name: "run-filters",
     description: "Run filters",
   },
-  run({ payload, context }) {
+  run() {
     console.log("Running filters...");
     return { result: "Success" };
   },

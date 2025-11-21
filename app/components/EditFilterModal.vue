@@ -50,7 +50,7 @@ function deleteAction(idx: number) {
 
         <UCard variant="outline" :class="[state.match === 'always' && 'opacity-50 pointer-events-none']">
           <div class="space-y-4">
-            <div v-for="(condition, idx) in state.conditions" class="flex gap-4" :key="idx">
+            <div v-for="(condition, idx) in state.conditions" :key="idx" class="flex gap-4">
               <USelect
                 v-model="condition.field"
                 label="Field"
@@ -81,7 +81,7 @@ function deleteAction(idx: number) {
         <div class="font-medium text-default text-sm">Actions</div>
         <UCard variant="outline">
           <div class="space-y-4">
-            <div v-for="(action, idx) in state.actions" class="flex gap-4" :key="idx">
+            <div v-for="(action, idx) in state.actions" :key="idx" class="flex gap-4">
               <USelect
                 v-model="action.type"
                 label="Action"

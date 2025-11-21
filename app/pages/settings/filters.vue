@@ -4,7 +4,7 @@ import { getLoadedOrUndefined } from "jazz-tools";
 import { type FilterType, UserAccount } from "#shared/schema";
 import { EditFilterModal } from "#components";
 
-const me = useAccount(UserAccount);
+const me = useAccount(UserAccount, { resolve: { root: { filters: true } } });
 
 const overlay = useOverlay();
 const modal = overlay.create(EditFilterModal);
@@ -13,7 +13,7 @@ async function createNew() {
   const instance = modal.open();
   const filter = await instance.result;
   if (filter) {
-    getLoadedOrUndefined(me.value)?.root.filters?.$jazz?.push(filter);
+    getLoadedOrUndefined(me.value)?.root?.filters?.$jazz?.push(filter);
   }
 }
 
@@ -44,8 +44,8 @@ async function remove(filter: FilterType) {
     </UDashboardNavbar>
     <div class="border-b border-default p-4 sm:px-6">
       <div class="w-lg mx-auto">
-        <div class="space-y-4" v-if="me?.$isLoaded">
-          <div v-for="filter in me?.root?.filters" class="grid grid-cols-[1fr_48px_70px] gap-4">
+        <div v-if="me?.$isLoaded" class="space-y-4">
+          <div v-for="filter in me?.root?.filters" :key="filter.name" class="grid grid-cols-[1fr_48px_70px] gap-4">
             <p>{{ filter.name }}</p>
             <UButton @click="edit(filter)">Edit</UButton>
             <UButton @click="remove(filter)">Remove</UButton>

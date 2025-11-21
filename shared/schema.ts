@@ -43,7 +43,11 @@ export type AccountType = co.loaded<typeof Account>;
 
 export const Device = co.map({
   name: z.string(),
-  pushRegistration: z.object() as unknown as PushSubscription,
+  pushRegistration: z.object({
+    endpoint: z.optional(z.string()),
+    expirationTime: z.optional(z.number()),
+    keys: z.optional(z.record(z.string(), z.string())),
+  }),
 });
 export type DeviceType = co.loaded<typeof Device>;
 
@@ -84,7 +88,7 @@ export const MiniMailRoot = co
       co.account()
         .load(workerAccountID)
         .then((workerAccount) => {
-          if (workerAccount) {
+          if (workerAccount?.$isLoaded) {
             root.$jazz.owner.addMember(workerAccount, "writer");
           } else {
             console.warn("worker account not found", workerAccountID);

@@ -5,7 +5,7 @@ import { getLoadedOrUndefined } from "jazz-tools";
 import { UserAccount } from "#shared/schema";
 import { selectedAccount } from "~/store";
 
-const me = useAccount(UserAccount);
+const me = useAccount(UserAccount, { resolve: { root: { accounts: { $each: true } } } });
 
 defineProps<{
   collapsed?: boolean;
@@ -13,7 +13,7 @@ defineProps<{
 
 const items = computed<DropdownMenuItem[][]>(() => {
   return [
-    getLoadedOrUndefined(getLoadedOrUndefined(me.value)?.root?.accounts)?.map(
+    getLoadedOrUndefined(me.value)?.root?.accounts?.map(
       (account) =>
         ({
           label: account?.email,
