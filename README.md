@@ -25,6 +25,8 @@ To start the actual application:
 
 `npx web-push generate-vapid-keys`
 
+`npx jazz-run account create --name "My Server Worker" --peer <jazzServerUrl>`
+
 ```js
 const config = {
   runtimeConfig: {

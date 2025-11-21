@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import useEmailFilterAndSort from "~/composables/useEmailFilterAndSort";
-import { selectedAccount, selectedFolder, selectedFolderAsString, selectedMailId } from "~/store";
+import { selectedAccount, selectedFolderAsString, selectedMailId } from "~/store";
 
 const tabItems = [
   {

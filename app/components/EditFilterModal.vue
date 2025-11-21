@@ -50,20 +50,20 @@ function deleteAction(idx: number) {
 
         <UCard variant="outline" :class="[state.match === 'always' && 'opacity-50 pointer-events-none']">
           <div class="space-y-4">
-            <div v-for="(condition, idx) in state.conditions" class="flex gap-4">
+            <div v-for="(condition, idx) in state.conditions" class="flex gap-4" :key="idx">
               <USelect
                 v-model="condition.field"
                 label="Field"
                 :items="[...Condition.shape.field.values]"
-                class="flex-grow"
+                class="grow"
               />
               <USelect
                 v-model="condition.operator"
                 label="Operator"
                 :items="[...Condition.shape.operator.values]"
-                class="flex-grow"
+                class="grow"
               />
-              <UInput v-model="condition.value" label="Value" class="flex-grow" />
+              <UInput v-model="condition.value" label="Value" class="grow" />
 
               <UButton icon="i-lucide-plus" size="md" color="primary" variant="solid" @click="insertCondition(idx)" />
               <UButton
@@ -81,16 +81,16 @@ function deleteAction(idx: number) {
         <div class="font-medium text-default text-sm">Actions</div>
         <UCard variant="outline">
           <div class="space-y-4">
-            <div v-for="(action, idx) in state.actions" class="flex gap-4">
+            <div v-for="(action, idx) in state.actions" class="flex gap-4" :key="idx">
               <USelect
                 v-model="action.type"
                 label="Action"
                 :items="[...Filter.shape.actions.element.shape.type.values]"
-                class="flex-grow"
+                class="grow"
               />
-              <div v-if="action.type === 'delete'" class="flex-grow" />
+              <div v-if="action.type === 'delete'" class="grow" />
               <!-- todo better selector for folder -->
-              <UInput v-else v-model="action.value" label="Value" class="flex-grow" />
+              <UInput v-else v-model="action.value" label="Value" class="grow" />
 
               <UButton icon="i-lucide-plus" size="md" color="primary" variant="solid" @click="insertAction(idx)" />
               <UButton

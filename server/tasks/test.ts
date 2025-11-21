@@ -1,4 +1,7 @@
 import { startWorker } from "jazz-tools/worker";
+import { MiniMailRoot, WorkerAccount } from "#shared/schema";
+import webpush from "web-push";
+import { useJazzWorker } from "~~/server/services/jazz";
 
 export default defineTask({
   meta: {
@@ -6,20 +9,34 @@ export default defineTask({
     description: "test",
   },
   async run({ payload, context }) {
-    const {
-      public: { jazzServerUrl, jazzApiKey },
-    } = useRuntimeConfig();
-    const peer = jazzServerUrl + (jazzApiKey ? `?key=${jazzApiKey}` : "");
-
-    const { worker } = await startWorker({
-      AccountSchema: MyWorkerAccount,
-      syncServer: peer,
-      accountID: process.env.JAZZ_WORKER_ACCOUNT || "co_zDJNYtPykdq1sFKpH27wAoYnGQX",
-      accountSecret:
-        process.env.JAZZ_WORKER_SECRET ||
-        "sealerSecret_z7wJbwgEGrdmvVFqz3jNtxs39z19GeXVKP9qdQSzsuEmj/signerSecret_z3AFog7BAfZLqLnnqujRJScCQKR4jjuGurGqnFnyU9ezF",
+    const test = await MiniMailRoot.load("co_zGJK5onTy2jD5CMyrduQym8bnym", {
+      loadAs: await useJazzWorker(),
+      resolve: {
+        filters: {
+          $onError: "catch",
+        },
+        accounts: {
+          $each: { $onError: "catch" },
+        },
+        devices: {
+          $each: { $onError: "catch" },
+        },
+      },
     });
 
-    return { result: "Success" };
+    const config = useRuntimeConfig();
+    test?.devices?.forEach((d) => {
+      webpush.setVapidDetails(
+        "https://minimail.benndorf.dev",
+        config.public.webPushPublicKey,
+        config.webPushPrivateKey
+      );
+
+      webpush.sendNotification(d!.pushRegistration, JSON.stringify({ title: "woo", content: "woooooooo" }), {
+        urgency: "high",
+      });
+    });
+
+    return { result: test };
   },
 });

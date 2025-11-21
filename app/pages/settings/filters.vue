@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { useAccount } from "community-jazz-vue";
+import { getLoadedOrUndefined } from "jazz-tools";
 import { type FilterType, UserAccount } from "#shared/schema";
 import { EditFilterModal } from "#components";
 
-const { me } = useAccount(UserAccount);
+const me = useAccount(UserAccount);
 
 const overlay = useOverlay();
 const modal = overlay.create(EditFilterModal);
@@ -12,7 +13,7 @@ async function createNew() {
   const instance = modal.open();
   const filter = await instance.result;
   if (filter) {
-    me.value?.root?.filters?.$jazz?.push(filter);
+    getLoadedOrUndefined(me.value)?.root.filters?.$jazz?.push(filter);
   }
 }
 
@@ -20,16 +21,16 @@ async function edit(filter: FilterType) {
   const instance = modal.open({ filter });
   const updatedFilter = await instance.result;
   if (updatedFilter && filter !== updatedFilter) {
-    const index = me.value?.root?.filters?.indexOf(filter);
+    const index = getLoadedOrUndefined(me.value)?.root?.filters?.indexOf(filter);
     if (index !== undefined && index >= 0) {
-      me.value?.root?.filters?.$jazz?.set(index, updatedFilter);
+      getLoadedOrUndefined(me.value)?.root?.filters?.$jazz?.set(index, updatedFilter);
     }
   }
 }
 
 async function remove(filter: FilterType) {
   if (confirm(`Are you sure you want to delete the filter ${filter.name}? This action cannot be undone.`)) {
-    me.value?.root?.filters?.$jazz?.remove((f) => f.name === filter.name);
+    getLoadedOrUndefined(me.value)?.root?.filters?.$jazz?.remove((f) => f.name === filter.name);
   }
 }
 </script>
@@ -42,8 +43,8 @@ async function remove(filter: FilterType) {
       </template>
     </UDashboardNavbar>
     <div class="border-b border-default p-4 sm:px-6">
-      <div class="w-128 mx-auto">
-        <div class="space-y-4">
+      <div class="w-lg mx-auto">
+        <div class="space-y-4" v-if="me?.$isLoaded">
           <div v-for="filter in me?.root?.filters" class="grid grid-cols-[1fr_48px_70px] gap-4">
             <p>{{ filter.name }}</p>
             <UButton @click="edit(filter)">Edit</UButton>

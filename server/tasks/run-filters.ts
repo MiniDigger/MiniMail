@@ -1,6 +1,6 @@
 export default defineTask({
   meta: {
-    name: "filters:run",
+    name: "run-filters",
     description: "Run filters",
   },
   run({ payload, context }) {

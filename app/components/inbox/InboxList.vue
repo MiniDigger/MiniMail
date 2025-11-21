@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Mail } from "~~/server/services/mail.types";
 import RelativeDate from "~/components/RelativeDate.vue";
-import { selectedAccount, selectedMailId } from "~/store";
+import { selectedMailId } from "~/store";
 
 const props = defineProps<{
   mails: Mail[];
@@ -71,13 +71,13 @@ defineShortcuts({
           !mail.flags.seen ? 'text-highlighted' : 'text-toned',
           selectedMail && selectedMail.seq === mail.seq
             ? 'border-primary bg-primary/10'
-            : 'border-(--ui-bg) hover:border-primary hover:bg-primary/5',
+            : 'border-bg hover:border-primary hover:bg-primary/5',
         ]"
         @click="selectedMail = mail"
       >
         <div class="flex items-center justify-between" :class="[!mail.flags.seen && 'font-semibold']">
           <div class="flex items-center gap-3">
-            {{ mail.from[0]?.name }} <{{ mail.from[0]?.address }}>
+            {{ mail.from[0]?.name }} &lt;{{ mail.from[0]?.address }}&gt;
 
             <UChip v-if="!mail.flags.seen" />
             <!-- todo more flag colors? -->

@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import type { DropdownMenuItem } from "@nuxt/ui";
 import { useAccount } from "community-jazz-vue";
+import { getLoadedOrUndefined } from "jazz-tools";
 import { UserAccount } from "#shared/schema";
 import { selectedAccount } from "~/store";
 
-const { me } = useAccount(UserAccount);
+const me = useAccount(UserAccount);
 
 defineProps<{
   collapsed?: boolean;
@@ -12,7 +13,7 @@ defineProps<{
 
 const items = computed<DropdownMenuItem[][]>(() => {
   return [
-    me.value?.root?.accounts?.map(
+    getLoadedOrUndefined(getLoadedOrUndefined(me.value)?.root?.accounts)?.map(
       (account) =>
         ({
           label: account?.email,

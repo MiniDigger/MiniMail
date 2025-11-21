@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { DropdownMenuItem } from "@nuxt/ui";
-import { useAccount } from "community-jazz-vue";
+import { useAccount, useLogOut } from "community-jazz-vue";
+import { getLoadedOrUndefined } from "jazz-tools";
 import { UserAccount } from "#shared/schema";
 
 defineProps<{
@@ -9,10 +10,11 @@ defineProps<{
 
 const colorMode = useColorMode();
 const appConfig = useAppConfig();
-const { me, logOut } = useAccount(UserAccount);
+const me = useAccount(UserAccount);
+const logout = useLogOut();
 
 watch(
-  () => me.value?.root?.settings,
+  () => getLoadedOrUndefined(getLoadedOrUndefined(me.value)?.root?.settings),
   (settings) => {
     if (settings) {
       if (settings.$jazz.has("colorMode")) {
@@ -167,7 +169,7 @@ const items = computed<DropdownMenuItem[][]>(
           icon: "i-lucide-log-out",
           onSelect(e: Event) {
             e.preventDefault();
-            logOut();
+            logout();
           },
         },
       ],

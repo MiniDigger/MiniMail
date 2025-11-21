@@ -20,7 +20,7 @@ const emit = defineEmits<{
   <UModal :title="'Edit Account ' + account?.name + ' (' + account?.email + ')'" description="dum">
     <template #body>
       <UForm
-        :schema="Account._schema"
+        :schema="Account.getDefinition()"
         :state="state"
         class="space-y-4 p-4 overflow-y-auto"
         @submit="emit('close', $event.data)"

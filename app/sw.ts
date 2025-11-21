@@ -28,7 +28,7 @@ self.addEventListener("push", (event) => {
     data = JSON.parse(event.data.text());
   }
 
-  let options = {
+  const options = {
     body: data.content,
   };
 

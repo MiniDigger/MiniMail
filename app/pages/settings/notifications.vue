@@ -1,14 +1,18 @@
 <script lang="ts" setup>
-import { useAccount } from "community-jazz-vue";
-import { type DeviceType, UserAccount } from "#shared/schema";
+import { experimental_useInboxSender, useAccount } from "community-jazz-vue";
+import { type DeviceType, UserAccount, UserStatusMessage } from "#shared/schema";
+import { getLoadedOrUndefined } from "jazz-tools";
 
-const { me } = useAccount(UserAccount);
+const me = useAccount(UserAccount);
 const pwa = usePWA();
 const deviceName = ref("New Device");
 const toast = useToast();
 
 async function registerForPushNotifications() {
-  if (deviceName.value === "" || me.value?.root?.devices?.find((d) => d?.name === deviceName.value)) {
+  if (
+    deviceName.value === "" ||
+    getLoadedOrUndefined(me.value)?.root?.devices?.find((d) => d?.name === deviceName.value)
+  ) {
     toast.add({
       title: "Error",
       description: "Device name is empty or already exists",
@@ -47,11 +51,13 @@ async function registerForPushNotifications() {
         name: deviceName.value,
         pushRegistration: newSub,
       };
-      me.value?.root?.devices?.$jazz?.push(device);
+      getLoadedOrUndefined(me.value)?.root?.devices?.$jazz?.push(device);
     } else {
       console.log("Existing subscription:", sub);
       console.log(JSON.stringify(sub));
-      const newDevice = me.value?.root?.devices?.find((d) => d?.pushRegistration?.endpoint === sub.endpoint);
+      const newDevice = getLoadedOrUndefined(me.value)?.root?.devices?.find(
+        (d) => d?.pushRegistration?.endpoint === sub.endpoint
+      );
       if (newDevice) {
         device = newDevice;
         device?.$jazz?.set("name", deviceName.value);
@@ -60,7 +66,7 @@ async function registerForPushNotifications() {
           name: deviceName.value,
           pushRegistration: sub,
         };
-        me.value?.root?.devices?.$jazz?.push(device);
+        getLoadedOrUndefined(me.value)?.root?.devices?.$jazz?.push(device);
       }
     }
     await test(device);
@@ -76,7 +82,7 @@ async function registerForPushNotifications() {
 
 async function remove(device: DeviceType) {
   if (confirm(`Are you sure you want to delete the device ${device?.name}? It will no longer recieve notifications.`)) {
-    me.value?.root?.devices?.$jazz?.remove((f) => f?.name === device?.name);
+    getLoadedOrUndefined(me.value)?.root?.devices?.$jazz?.remove((f) => f?.name === device?.name);
   }
 }
 
@@ -91,6 +97,17 @@ async function test(device: DeviceType) {
       payload: { title: "Test Notification", content: "This is a test" },
     }),
   });
+}
+
+const {
+  public: { workerAccountID },
+} = useRuntimeConfig();
+const sendInboxMessage = experimental_useInboxSender(workerAccountID);
+async function changeUserStatus() {
+  const result = await sendInboxMessage(
+    UserStatusMessage.create({ status: !getLoadedOrUndefined(me.value)?.root?.enabled })
+  );
+  console.log("result", result);
 }
 </script>
 
@@ -111,10 +128,14 @@ async function test(device: DeviceType) {
           <UInput v-model="deviceName" />
           <UButton @click="registerForPushNotifications">Register for push notifications</UButton>
         </div>
+        <div v-if="me?.$isLoaded">
+          Server worker enabled: {{ me?.root?.enabled }}
+          <UButton @click="changeUserStatus">Toggle</UButton>
+        </div>
       </div>
     </div>
     <div class="border-b border-default p-4 sm:px-6">
-      <div class="space-y-4">
+      <div class="space-y-4" v-if="me?.$isLoaded">
         <div v-for="device in me?.root?.devices" class="grid grid-cols-[1fr_55px_70px] gap-4">
           <template v-if="device">
             <div>{{ device.name }} - {{ device.pushRegistration?.endpoint?.substring(0, 40) + "..." }}</div>

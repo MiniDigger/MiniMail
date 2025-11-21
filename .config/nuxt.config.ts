@@ -6,12 +6,12 @@ export default defineNuxtConfig({
   modules: ["@nuxt/eslint", "@nuxt/ui", "@compodium/nuxt", "@vite-pwa/nuxt"],
   css: ["~/assets/style/main.css"],
   nitro: {
-    plugins: ["services/mail.ts"],
+    plugins: ["services/mail.ts", "services/jazz.ts"],
     experimental: {
       tasks: true,
     },
     scheduledTasks: {
-      "*/5 * * * *": ["filters:run"],
+      "* * * * *": ["run-filters"],
     },
     prerender: {
       routes: ["/", "/pwatest", "/settings/accounts", "/settings/filters", "/settings/notifications"],
