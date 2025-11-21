@@ -1,13 +1,11 @@
 import { startWorker } from "jazz-tools/worker";
 import type { WorkerAccountLoaded } from "#shared/schema";
-import { UserAccount, UserStatusMessage, WorkerAccount  } from "#shared/schema";
+import { UserAccount, UserStatusMessage, WorkerAccount } from "#shared/schema";
 import { getLoadedOrUndefined } from "jazz-tools";
 
 export default defineNitroPlugin(async (nitroApp) => {
   const worker = await useJazzWorker();
   const inbox = await useJazzInbox();
-
-  worker.$jazz.ensureLoaded({ resolve: { root: { users: { $each: true } } } });
 
   nitroApp.hooks.hook("request", (event) => {
     console.log("on request", event.path);
@@ -26,18 +24,16 @@ export default defineNitroPlugin(async (nitroApp) => {
       console.warn(`Sender account ${senderId} not found`);
       return;
     }
-    if (!worker.$isLoaded || !worker.root?.$isLoaded || !worker.root.users?.$isLoaded) {
-      console.warn("Worker account or root not loaded");
-      return;
-    }
+
+    const loadedWorker = await worker.$jazz.ensureLoaded({ resolve: { root: { users: { $each: true } } } });
 
     if (message.status) {
       console.log(`User ${senderId} is enabled`, sender.root);
-      worker.root?.users?.$jazz?.push({ name: senderId, data: sender.root });
+      loadedWorker.root?.users?.$jazz?.push({ name: senderId, data: sender.root });
       sender.root?.$jazz?.set("enabled", true);
     } else {
       console.log(`User ${senderId} is disabled`);
-      worker.root?.users?.$jazz?.remove((u) => getLoadedOrUndefined(u)?.name === senderId);
+      loadedWorker.root?.users?.$jazz?.remove((u) => getLoadedOrUndefined(u)?.name === senderId);
       sender.root?.$jazz?.set("enabled", false);
     }
   });
