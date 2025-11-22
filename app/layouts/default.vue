@@ -22,9 +22,9 @@ const links = computed(
         ...(folders.value?.map((folder) => ({
           label: folder.name,
           icon: "i-lucide-house",
-          active: selectedFolder.value === folder,
+          active: selectedFolder.value?.$jazz.id === folder.$jazz.id,
           onSelect() {
-            selectedFolder.value = folder;
+            selectedFolder.value = markRaw(folder);
           },
         })) || []),
       ],

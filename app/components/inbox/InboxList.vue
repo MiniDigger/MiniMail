@@ -1,26 +1,13 @@
 <script setup lang="ts">
-import type { Mail } from "~~/server/services/mail.types";
 import RelativeDate from "~/components/RelativeDate.vue";
-import { selectedMailId } from "~/store";
+import { selectedMail } from "~/store";
+import type { MailType } from "#shared/schema";
 
 const props = defineProps<{
-  mails: Mail[];
+  mails: MailType[];
 }>();
 
 const mailsRefs = ref<Record<string, Element>>({});
-
-const selectedMail = computed({
-  get: () => {
-    return props.mails.find((mail) => mail.seq === selectedMailId.value) || null;
-  },
-  async set(mail: Mail | undefined) {
-    if (mail) {
-      selectedMailId.value = mail.seq;
-    } else {
-      selectedMailId.value = undefined;
-    }
-  },
-});
 
 watch(selectedMail, () => {
   if (!selectedMail.value) {
@@ -37,18 +24,18 @@ defineShortcuts({
     const index = props.mails.findIndex((mail) => mail.seq === selectedMail.value?.seq);
 
     if (index === -1) {
-      selectedMail.value = props.mails[0];
+      selectedMail.value = markRaw(props.mails[0]);
     } else if (index < props.mails.length - 1) {
-      selectedMail.value = props.mails[index + 1];
+      selectedMail.value = markRaw(props.mails[index + 1]);
     }
   },
   arrowup: () => {
     const index = props.mails.findIndex((mail) => mail.seq === selectedMail.value?.seq);
 
     if (index === -1) {
-      selectedMail.value = props.mails[props.mails.length - 1];
+      selectedMail.value = markRaw(props.mails[props.mails.length - 1]);
     } else if (index > 0) {
-      selectedMail.value = props.mails[index - 1];
+      selectedMail.value = markRaw(props.mails[index - 1]);
     }
   },
 });
@@ -73,7 +60,7 @@ defineShortcuts({
             ? 'border-primary bg-primary/10'
             : 'border-bg hover:border-primary hover:bg-primary/5',
         ]"
-        @click="selectedMail = mail"
+        @click="selectedMail = markRaw(mail)"
       >
         <div class="flex items-center justify-between" :class="[!mail.flags.seen && 'font-semibold']">
           <div class="flex items-center gap-3">

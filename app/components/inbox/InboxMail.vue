@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import type { Mail } from "~~/server/services/mail.types";
 import RelativeDate from "~/components/RelativeDate.vue";
-import { selectedMailId } from "~/store";
+import { selectedMail } from "~/store";
+import type { MailType } from "#shared/schema";
 
 const { mail } = defineProps<{
-  mail: Mail;
+  mail: MailType;
 }>();
 
 const dropdownItems = [
@@ -32,6 +32,8 @@ const dropdownItems = [
 
 console.log("inbox mail", mail);
 
+// TODO ensureloaded content
+
 const toast = useToast();
 
 const reply = ref("");
@@ -55,7 +57,7 @@ function onSubmit() {
 }
 
 async function close() {
-  selectedMailId.value = undefined;
+  selectedMail.value = undefined;
 }
 </script>
 

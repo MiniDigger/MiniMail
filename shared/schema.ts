@@ -27,10 +27,43 @@ export const Filter = z.object({
 });
 export type FilterType = z.infer<typeof Filter>;
 
-export const Folder = co.map({
+export const MailAddress = z.object({
   name: z.string(),
-  path: z.array(z.string()),
+  address: z.string(),
 });
+
+export const Mail = co.map({
+  seq: z.number(),
+  messageId: z.string(),
+  subject: z.string(),
+  date: z.date(),
+  from: z.array(MailAddress),
+  to: z.array(MailAddress),
+  replyTo: z.array(MailAddress),
+  body: z.optional(z.string()),
+  flags: z.object({
+    seen: z.boolean(),
+    flagged: z.optional(z.string()),
+    answered: z.boolean(),
+  }),
+});
+export type MailType = co.loaded<typeof Mail>;
+
+export const Folder = co
+  .map({
+    name: z.string(),
+    path: z.array(z.string()),
+    mails: co.list(Mail),
+    mailIndex: co.record(z.string(), Mail),
+  })
+  .withMigration((folder) => {
+    if (!folder.$jazz.has("mails")) {
+      folder.$jazz.set("mails", []);
+    }
+    if (!folder.$jazz.has("mailIndex")) {
+      folder.$jazz.set("mailIndex", {});
+    }
+  });
 export type FolderType = co.loaded<typeof Folder>;
 
 export const Account = co
