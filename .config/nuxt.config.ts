@@ -11,7 +11,7 @@ export default defineNuxtConfig({
       tasks: true,
     },
     scheduledTasks: {
-      "* * * * *": ["run-filters"],
+      "* * * * *": ["run-filters", "sync-folders"],
     },
     prerender: {
       routes: ["/", "/pwatest", "/settings/accounts", "/settings/filters", "/settings/notifications"],

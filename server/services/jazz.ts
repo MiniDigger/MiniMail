@@ -8,7 +8,6 @@ export default defineNitroPlugin(async (nitroApp) => {
   const inbox = await useJazzInbox();
 
   nitroApp.hooks.hook("request", (event) => {
-    console.log("on request", event.path);
     event.context.jazzWorker = worker;
   });
 
@@ -18,7 +17,7 @@ export default defineNitroPlugin(async (nitroApp) => {
 
   inbox.subscribe(UserStatusMessage, async (message, senderId) => {
     console.log("got inbox message from", senderId, message);
-    const sender = await UserAccount.load(senderId, { loadAs: worker, resolve: { root: true } });
+    const sender = await UserAccount.load(senderId, { loadAs: worker, resolve: { root: true, profile: true } });
 
     if (!sender?.$isLoaded) {
       console.warn(`Sender account ${senderId} not found`);
@@ -28,8 +27,8 @@ export default defineNitroPlugin(async (nitroApp) => {
     const loadedWorker = await worker.$jazz.ensureLoaded({ resolve: { root: { users: { $each: true } } } });
 
     if (message.status) {
-      console.log(`User ${senderId} is enabled`, sender.root);
-      loadedWorker.root?.users?.$jazz?.push({ name: senderId, data: sender.root });
+      console.log(`User ${senderId} is enabled`);
+      loadedWorker.root?.users?.$jazz?.push({ name: sender.profile.name, id: sender.$jazz.id, data: sender.root });
       sender.root?.$jazz?.set("enabled", true);
     } else {
       console.log(`User ${senderId} is disabled`);

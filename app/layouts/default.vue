@@ -3,17 +3,21 @@ import type { NavigationMenuItem } from "@nuxt/ui";
 import AccountMenu from "~/components/layout/AccountMenu.vue";
 import SettingsMenu from "~/components/layout/SettingsMenu.vue";
 import { selectedAccount, selectedFolder } from "~/store";
+import { computedAsync } from "@vueuse/core";
 
 const open = ref(false);
 
-const { data: folders } = await useFetch(() => `/api/mail/${selectedAccount.value}/folders`, {
-  default: () => [],
+// TODO this isn't fully reactive to server changes, investigate later
+const folders = computedAsync(async () => {
+  const loaded = await selectedAccount?.value?.$jazz?.ensureLoaded({ resolve: { folders: { $each: true } } });
+  if (!loaded?.folders?.$isLoaded) return undefined;
+  return loaded?.folders;
 });
+
 const links = computed(
   () =>
     [
       // TODO properly nest these
-      // TODO list folders per account here
       [
         ...(folders.value?.map((folder) => ({
           label: folder.name,

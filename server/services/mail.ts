@@ -35,7 +35,6 @@ async function ensureConnected(mailAccount: MailAccount): Promise<ImapFlow> {
 }
 
 export async function getFolders(mailAccount: MailAccount) {
-  console.log("Getting folders:", mailAccount.user);
   const client = await ensureConnected(mailAccount);
 
   const folders = await client.list();

@@ -45,6 +45,9 @@
     "vue-router": "4.6.3",
     "web-push": "3.6.7"
   },
+  "overrides": {
+    "reka-ui": "https://pkg.pr.new/reka-ui@2250"
+  },
   "prettier": {
     "semi": true,
     "singleQuote": false,

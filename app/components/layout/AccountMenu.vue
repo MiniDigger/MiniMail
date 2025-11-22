@@ -18,7 +18,7 @@ const items = computed<DropdownMenuItem[][]>(() => {
         ({
           label: account?.email,
           async onSelect() {
-            selectedAccount.value = account?.email;
+            selectedAccount.value = markRaw(account);
           },
         }) satisfies DropdownMenuItem
     ) || [],
@@ -48,7 +48,7 @@ const items = computed<DropdownMenuItem[][]>(() => {
   >
     <UButton
       v-bind="{
-        label: collapsed ? undefined : selectedAccount || 'Select account...',
+        label: collapsed ? undefined : selectedAccount?.email || 'Select account...',
         trailingIcon: collapsed ? undefined : 'i-lucide-chevrons-up-down',
       }"
       color="neutral"

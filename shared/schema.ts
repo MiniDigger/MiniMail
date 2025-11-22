@@ -27,18 +27,31 @@ export const Filter = z.object({
 });
 export type FilterType = z.infer<typeof Filter>;
 
-export const Account = co.map({
+export const Folder = co.map({
   name: z.string(),
-  email: z.string(),
-  incomingServer: z.string(),
-  incomingPort: z.number(),
-  incomingSecurity: z.literal(["ssl", "starttls", "none"]),
-  outgoingServer: z.string(),
-  outgoingPort: z.number(),
-  outgoingSecurity: z.literal(["ssl", "starttls", "none"]),
-  username: z.string(),
-  password: z.string(), // TODO how to do this better?
+  path: z.array(z.string()),
 });
+export type FolderType = co.loaded<typeof Folder>;
+
+export const Account = co
+  .map({
+    name: z.string(),
+    email: z.string(),
+    incomingServer: z.string(),
+    incomingPort: z.number(),
+    incomingSecurity: z.literal(["ssl", "starttls", "none"]),
+    outgoingServer: z.string(),
+    outgoingPort: z.number(),
+    outgoingSecurity: z.literal(["ssl", "starttls", "none"]),
+    username: z.string(),
+    password: z.string(), // TODO how to do this better?
+    folders: co.list(Folder),
+  })
+  .withMigration((account) => {
+    if (!account.$jazz.has("folders")) {
+      account.$jazz.set("folders", []);
+    }
+  });
 export type AccountType = co.loaded<typeof Account>;
 
 export const Device = co.map({
@@ -124,6 +137,7 @@ export const UserStatusMessage = co.map({
 
 export const MiniMailUser = co.map({
   name: z.string(),
+  id: z.string(),
   data: MiniMailRoot,
 });
 

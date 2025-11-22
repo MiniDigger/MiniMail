@@ -1,4 +1,6 @@
-export const selectedAccount = ref<string>();
+import type { AccountType } from "#shared/schema";
+
+export const selectedAccount = ref<AccountType>();
 export const selectedFolder = ref<{
   name: string;
   path: string[];
