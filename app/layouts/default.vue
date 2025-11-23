@@ -1,40 +1,37 @@
 <script setup lang="ts">
-import type { NavigationMenuItem } from "@nuxt/ui";
 import AccountMenu from "~/components/layout/AccountMenu.vue";
 import SettingsMenu from "~/components/layout/SettingsMenu.vue";
-import { selectedAccount, selectedFolder } from "~/store";
-import { computedAsync } from "@vueuse/core";
+import { useCoState } from "community-jazz-vue";
+import { Account } from "#shared/schema";
+import { selectedAccountId, selectedFolderId } from "~/store";
+import type { NavigationMenuItem } from "#ui/components/NavigationMenu.vue";
 
 const open = ref(false);
 
-// TODO this isn't fully reactive to server changes, investigate later
-const folders = computedAsync(async () => {
-  const loaded = await selectedAccount?.value?.$jazz?.ensureLoaded({ resolve: { folders: { $each: true } } });
-  if (!loaded?.folders?.$isLoaded) return undefined;
-  return loaded?.folders;
-});
+const account = useCoState(Account, selectedAccountId, { resolve: { folders: { $each: true } } });
 
-const links = computed(
-  () =>
-    [
-      // TODO properly nest these
-      [
-        ...(folders.value?.map((folder) => ({
+const folders = computed(() => {
+  if (!account.value.$isLoaded) return [];
+  // TODO properly nest these
+  return (
+    account.value?.folders?.map(
+      (folder) =>
+        ({
           label: folder.name,
           icon: "i-lucide-house",
-          active: selectedFolder.value?.$jazz.id === folder.$jazz.id,
+          active: selectedFolderId.value === folder.$jazz.id,
           onSelect() {
-            selectedFolder.value = markRaw(folder);
+            selectedFolderId.value = folder.$jazz.id;
           },
-        })) || []),
-      ],
-    ] satisfies NavigationMenuItem[][]
-);
+        }) satisfies NavigationMenuItem
+    ) || []
+  );
+});
 const groups = computed(() => [
   {
-    id: "links",
+    id: "folders",
     label: "Go to",
-    items: links.value.flat(),
+    items: folders.value,
   },
   {
     id: "settings",
@@ -71,9 +68,7 @@ const groups = computed(() => [
       <template #default="{ collapsed }">
         <UDashboardSearchButton :collapsed class="bg-transparent ring-default" />
 
-        <UNavigationMenu :collapsed :items="links[0]" orientation="vertical" tooltip popover />
-
-        <UNavigationMenu :collapsed :items="links[1]" orientation="vertical" tooltip class="mt-auto" />
+        <UNavigationMenu :collapsed :items="folders" orientation="vertical" tooltip popover />
       </template>
 
       <template #footer="{ collapsed }">

@@ -37,7 +37,7 @@ export default defineNuxtConfig({
   pwa: {
     mode: "development",
     devOptions: {
-      enabled: true,
+      enabled: false,
       type: "module",
     },
     srcDir: ".",

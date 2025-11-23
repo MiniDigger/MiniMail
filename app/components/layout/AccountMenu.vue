@@ -1,15 +1,28 @@
 <script setup lang="ts">
 import type { DropdownMenuItem } from "@nuxt/ui";
-import { useAccount } from "community-jazz-vue";
+import { useAccount, useCoState } from "community-jazz-vue";
 import { getLoadedOrUndefined } from "jazz-tools";
-import { UserAccount } from "#shared/schema";
-import { selectedAccount } from "~/store";
+import { Account, UserAccount } from "#shared/schema";
+import { selectedAccountId } from "~/store";
 
 const me = useAccount(UserAccount, { resolve: { root: { accounts: { $each: true } } } });
 
-defineProps<{
+const { collapsed } = defineProps<{
   collapsed?: boolean;
 }>();
+
+const selectedAccount = useCoState(Account, selectedAccountId);
+const label = computed(() => {
+  if (collapsed) {
+    return undefined;
+  } else {
+    if (selectedAccount.value.$isLoaded && selectedAccount.value.email) {
+      return selectedAccount.value.email;
+    } else {
+      return "Select account...";
+    }
+  }
+});
 
 const items = computed<DropdownMenuItem[][]>(() => {
   return [
@@ -18,7 +31,7 @@ const items = computed<DropdownMenuItem[][]>(() => {
         ({
           label: account?.email,
           async onSelect() {
-            selectedAccount.value = markRaw(account);
+            selectedAccountId.value = account.$jazz.id;
           },
         }) satisfies DropdownMenuItem
     ) || [],
@@ -47,10 +60,8 @@ const items = computed<DropdownMenuItem[][]>(() => {
     }"
   >
     <UButton
-      v-bind="{
-        label: collapsed ? undefined : selectedAccount?.email || 'Select account...',
-        trailingIcon: collapsed ? undefined : 'i-lucide-chevrons-up-down',
-      }"
+      :trailingIcon="collapsed ? undefined : 'i-lucide-chevrons-up-down'"
+      :label
       color="neutral"
       variant="ghost"
       block

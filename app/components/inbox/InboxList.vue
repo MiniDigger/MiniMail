@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import RelativeDate from "~/components/RelativeDate.vue";
-import { selectedMail } from "~/store";
+import { selectedMailId } from "~/store";
 import type { MailType } from "#shared/schema";
 
 const props = defineProps<{
@@ -9,11 +9,11 @@ const props = defineProps<{
 
 const mailsRefs = ref<Record<string, Element>>({});
 
-watch(selectedMail, () => {
-  if (!selectedMail.value) {
+watch(selectedMailId, () => {
+  if (!selectedMailId.value) {
     return;
   }
-  const ref = mailsRefs.value[selectedMail.value.seq];
+  const ref = mailsRefs.value[selectedMailId.value];
   if (ref) {
     ref.scrollIntoView({ block: "nearest" });
   }
@@ -21,21 +21,21 @@ watch(selectedMail, () => {
 
 defineShortcuts({
   arrowdown: () => {
-    const index = props.mails.findIndex((mail) => mail.seq === selectedMail.value?.seq);
+    const index = props.mails.findIndex((mail) => mail.$jazz.id === selectedMailId.value);
 
     if (index === -1) {
-      selectedMail.value = markRaw(props.mails[0]);
+      selectedMailId.value = props.mails[0]?.$jazz?.id;
     } else if (index < props.mails.length - 1) {
-      selectedMail.value = markRaw(props.mails[index + 1]);
+      selectedMailId.value = props.mails[index + 1]?.$jazz?.id;
     }
   },
   arrowup: () => {
-    const index = props.mails.findIndex((mail) => mail.seq === selectedMail.value?.seq);
+    const index = props.mails.findIndex((mail) => mail.$jazz.id === selectedMailId.value);
 
     if (index === -1) {
-      selectedMail.value = markRaw(props.mails[props.mails.length - 1]);
+      selectedMailId.value = props.mails[props.mails.length - 1]?.$jazz?.id;
     } else if (index > 0) {
-      selectedMail.value = markRaw(props.mails[index - 1]);
+      selectedMailId.value = props.mails[index - 1]?.$jazz?.id;
     }
   },
 });
@@ -48,7 +48,7 @@ defineShortcuts({
       :key="index"
       :ref="
         (el) => {
-          mailsRefs[mail.seq] = el as Element;
+          mailsRefs[mail.$jazz.id] = el as Element;
         }
       "
     >
@@ -56,11 +56,11 @@ defineShortcuts({
         class="p-2 sm:px-6 text-sm cursor-pointer border-l-2 transition-colors"
         :class="[
           !mail.flags.seen ? 'text-highlighted' : 'text-toned',
-          selectedMail && selectedMail.seq === mail.seq
+          selectedMailId === mail.$jazz.id
             ? 'border-primary bg-primary/10'
             : 'border-bg hover:border-primary hover:bg-primary/5',
         ]"
-        @click="selectedMail = markRaw(mail)"
+        @click="selectedMailId = mail.$jazz.id"
       >
         <div class="flex items-center justify-between" :class="[!mail.flags.seen && 'font-semibold']">
           <div class="flex items-center gap-3">

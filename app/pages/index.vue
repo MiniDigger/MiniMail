@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import useEmailFilterAndSort from "~/composables/useEmailFilterAndSort";
-import { selectedFolder, selectedMail } from "~/store";
-import { computedAsync } from "@vueuse/core";
+import { selectedFolderId, selectedMailId } from "~/store";
+import { useCoState } from "community-jazz-vue";
+import { Folder } from "#shared/schema";
 
 const tabItems = [
   {
@@ -16,15 +17,11 @@ const tabItems = [
 ];
 const selectedTab = ref("all");
 
-const rawMails = computedAsync(async () => {
-  console.log("check raw mail");
-  const loaded = await selectedFolder.value?.$jazz.ensureLoaded({ resolve: { mails: { $each: true } } });
-  if (!loaded?.mails?.$isLoaded) return [];
-  console.log("raw mails", loaded.mails);
-  return loaded.mails;
-}, []);
+const folder = useCoState(Folder, selectedFolderId, {
+  resolve: { mails: { $each: true } },
+});
 
-const mails = useEmailFilterAndSort(rawMails, "", selectedTab);
+const mails = useEmailFilterAndSort(() => (folder.value?.$isLoaded ? folder.value.mails : []), "", selectedTab);
 </script>
 
 <template>
@@ -44,7 +41,7 @@ const mails = useEmailFilterAndSort(rawMails, "", selectedTab);
     <InboxList :mails="mails" />
   </UDashboardPanel>
 
-  <InboxMail v-if="selectedMail" :mail="selectedMail" />
+  <InboxMail v-if="selectedMailId" />
   <div v-else class="hidden lg:flex flex-1 items-center justify-center">
     <UIcon name="i-lucide-inbox" class="size-32 text-dimmed" />
   </div>

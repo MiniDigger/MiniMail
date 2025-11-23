@@ -1,11 +1,8 @@
 <script setup lang="ts">
+import { useCoState } from "community-jazz-vue";
 import RelativeDate from "~/components/RelativeDate.vue";
-import { selectedMail } from "~/store";
-import type { MailType } from "#shared/schema";
-
-const { mail } = defineProps<{
-  mail: MailType;
-}>();
+import { Mail } from "#shared/schema";
+import { selectedMailId } from "~/store";
 
 const dropdownItems = [
   [
@@ -30,9 +27,8 @@ const dropdownItems = [
   ],
 ];
 
-console.log("inbox mail", mail);
-
 // TODO ensureloaded content
+const mail = useCoState(Mail, selectedMailId)
 
 const toast = useToast();
 
@@ -57,12 +53,12 @@ function onSubmit() {
 }
 
 async function close() {
-  selectedMail.value = undefined;
+  selectedMailId.value = undefined;
 }
 </script>
 
 <template>
-  <UDashboardPanel id="inbox-2">
+  <UDashboardPanel id="inbox-2" v-if="mail.$isLoaded">
     <UDashboardNavbar :title="mail.subject" :toggle="false">
       <template #leading>
         <UButton icon="i-lucide-x" color="neutral" variant="ghost" class="-ms-1.5" @click="close" />
