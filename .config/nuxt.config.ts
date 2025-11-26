@@ -11,7 +11,7 @@ export default defineNuxtConfig({
       tasks: true,
     },
     scheduledTasks: {
-      "* * * * *": ["run-filters", "sync-folders"],
+      "* * * * *": ["run-filters", "sync-folders", "sync-mails"],
     },
     prerender: {
       routes: ["/", "/pwatest", "/settings/accounts", "/settings/filters", "/settings/notifications"],
@@ -87,6 +87,20 @@ export default defineNuxtConfig({
     },
     client: {
       installPrompt: true,
+    },
+  },
+  runtimeConfig: {
+    webPushPrivateKey: "wO2tigOhp4Xy9MJJSX078nZonQGDsv0t0XNHmkfbI6c",
+    workerSecret:
+      "sealerSecret_z7wJbwgEGrdmvVFqz3jNtxs39z19GeXVKP9qdQSzsuEmj/signerSecret_z3AFog7BAfZLqLnnqujRJScCQKR4jjuGurGqnFnyU9ezF",
+    public: {
+      clerkPubKey: "pk_test_YW1hemluZy10ZXJyaWVyLTQ4LmNsZXJrLmFjY291bnRzLmRldiQ",
+      jazzApiKey:
+        "Y29fekRHeFdnUjdXTHdTc2FNOVdNZ0NaUmJ1VWt4fGNvX3o1VE45aFBCTmtoTGdua2pBYWpDSHN5Sm1Gc3xjb196QVlyOGR0dmIzSzZzSzhHV3pvZ3R2aTlmTWY",
+      jazzServerUrl: "wss://cloud.jazz.tools",
+      onesignalAppId: "96265c81-9366-4069-8c9a-fdcfcb167772", //"f775d0bd-f2a1-4c22-b4ef-157541939562",
+      webPushPublicKey: "BNJreu9HwQ88JOlu2HNQ329tiC6B-05aTFjQcXwaENGB1WQUOBBjkBYA2HndkoqT6jMzuNq_yV1bD8a7RsheGPA",
+      workerAccountID: "co_zDJNYtPykdq1sFKpH27wAoYnGQX",
     },
   },
 });
