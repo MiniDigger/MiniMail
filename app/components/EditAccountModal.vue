@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { type AccountType } from "#shared/schema";
+import type { AccountType } from "#shared/schema";
 
 const {
   account = {

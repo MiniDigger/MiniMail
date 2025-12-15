@@ -1,7 +1,9 @@
 import { useJazzWorker } from "~~/server/services/jazz";
 import { getFolders } from "~~/server/services/mail";
-import { Folder, FolderType, Mail } from "#shared/schema";
-import { co, CoList, getLoadedOrUndefined, z } from "jazz-tools";
+import type { FolderType } from "#shared/schema";
+import { Folder, Mail } from "#shared/schema";
+import type { CoList } from "jazz-tools";
+import { co, getLoadedOrUndefined, z } from "jazz-tools";
 
 export default defineTask({
   meta: {
@@ -38,7 +40,7 @@ function syncFolders(imapFolders: { name: string; path: string[] }[], existingFo
   }
 
   const imapKeys = new Set(imapFolders.map(buildKey));
-  const jazzFolders = new Map<string, any>();
+  const jazzFolders = new Map<string, FolderType>();
   for (const folder of existingFolders) {
     if (!folder) continue;
     jazzFolders.set(buildKey(folder), folder);

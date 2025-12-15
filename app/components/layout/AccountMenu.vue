@@ -60,7 +60,7 @@ const items = computed<DropdownMenuItem[][]>(() => {
     }"
   >
     <UButton
-      :trailingIcon="collapsed ? undefined : 'i-lucide-chevrons-up-down'"
+      :trailing-icon="collapsed ? undefined : 'i-lucide-chevrons-up-down'"
       :label
       color="neutral"
       variant="ghost"

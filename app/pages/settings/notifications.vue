@@ -10,10 +10,7 @@ const toast = useToast();
 
 async function registerForPushNotifications() {
   const root = getLoadedOrUndefined(me.value)?.root;
-  if (
-    deviceName.value === "" ||
-    root?.devices?.find((d) => d?.name === deviceName.value)
-  ) {
+  if (deviceName.value === "" || root?.devices?.find((d) => d?.name === deviceName.value)) {
     toast.add({
       title: "Error",
       description: "Device name is empty or already exists",
@@ -48,25 +45,29 @@ async function registerForPushNotifications() {
         applicationServerKey: webPushPublicKey,
       });
       console.log("New subscription:", newSub);
-      device = Device.create({
-        name: deviceName.value,
-        pushRegistration: newSub.toJSON() as DeviceType["pushRegistration"],
-      }, { owner: root?.$jazz.owner });
+      device = Device.create(
+        {
+          name: deviceName.value,
+          pushRegistration: newSub.toJSON() as DeviceType["pushRegistration"],
+        },
+        { owner: root?.$jazz.owner }
+      );
       root?.devices?.$jazz?.push(device);
     } else {
       console.log("Existing subscription:", sub);
       console.log(JSON.stringify(sub));
-      const newDevice = root?.devices?.find(
-        (d) => d?.pushRegistration?.endpoint === sub.endpoint
-      );
+      const newDevice = root?.devices?.find((d) => d?.pushRegistration?.endpoint === sub.endpoint);
       if (newDevice) {
         device = newDevice;
         device?.$jazz?.set("name", deviceName.value);
       } else {
-        device = Device.create({
-          name: deviceName.value,
-          pushRegistration: sub.toJSON() as DeviceType["pushRegistration"],
-        }, { owner: root?.$jazz.owner });
+        device = Device.create(
+          {
+            name: deviceName.value,
+            pushRegistration: sub.toJSON() as DeviceType["pushRegistration"],
+          },
+          { owner: root?.$jazz.owner }
+        );
         root?.devices?.$jazz?.push(device);
       }
     }

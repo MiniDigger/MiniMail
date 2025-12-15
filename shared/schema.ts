@@ -116,11 +116,17 @@ export const MiniMailRoot = co
       root.$jazz.set("devices", co.list(Device).create([], { owner: root.$jazz.owner }));
     }
     if (!root.$jazz.has("settings")) {
-      root.$jazz.set("settings", Settings.create({
-        colorMode: "system",
-        primaryColor: "blue",
-        neutralColor: "slate",
-      }, { owner: root.$jazz.owner }));
+      root.$jazz.set(
+        "settings",
+        Settings.create(
+          {
+            colorMode: "system",
+            primaryColor: "blue",
+            neutralColor: "slate",
+          },
+          { owner: root.$jazz.owner }
+        )
+      );
     }
     if (!root.$jazz.has("enabled")) {
       root.$jazz.set("enabled", false);
@@ -131,7 +137,7 @@ export type MiniMailRootType = co.loaded<typeof MiniMailRoot>;
 export const UserAccount = co
   .account({
     root: MiniMailRoot,
-    profile: co.profile()
+    profile: co.profile(),
   })
   .withMigration(async (account) => {
     if (!account.$jazz.has("root")) {

@@ -28,7 +28,7 @@ const dropdownItems = [
 ];
 
 // TODO ensureloaded content
-const mail = useCoState(Mail, selectedMailId)
+const mail = useCoState(Mail, selectedMailId);
 
 const toast = useToast();
 
@@ -58,7 +58,7 @@ async function close() {
 </script>
 
 <template>
-  <UDashboardPanel id="inbox-2" v-if="mail.$isLoaded">
+  <UDashboardPanel v-if="mail.$isLoaded" id="inbox-2">
     <UDashboardNavbar :title="mail.subject" :toggle="false">
       <template #leading>
         <UButton icon="i-lucide-x" color="neutral" variant="ghost" class="-ms-1.5" @click="close" />

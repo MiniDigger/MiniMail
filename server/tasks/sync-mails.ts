@@ -1,5 +1,5 @@
 import { useJazzWorker } from "~~/server/services/jazz";
-import { getFolders, getMails } from "~~/server/services/mail";
+import { getMails } from "~~/server/services/mail";
 import { Mail } from "#shared/schema";
 
 export default defineTask({
