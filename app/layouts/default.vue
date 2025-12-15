@@ -10,6 +10,15 @@ const open = ref(false);
 
 const account = useCoState(Account, selectedAccountId, { resolve: { folders: { $each: true } } });
 
+// Reset selected folder when account changes
+watch(account, () => {
+  if (!account.value.$isLoaded) {
+    selectedFolderId.value = undefined;
+  } else {
+    selectedFolderId.value = account.value?.folders?.[0]?.$jazz?.id;
+  }
+});
+
 const folders = computed(() => {
   if (!account.value.$isLoaded) return [];
   // TODO properly nest these
