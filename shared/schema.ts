@@ -32,21 +32,30 @@ export const MailAddress = z.object({
   address: z.string(),
 });
 
-export const Mail = co.map({
-  seq: z.number(),
-  messageId: z.string(),
-  subject: z.string(),
-  date: z.date(),
-  from: z.array(MailAddress),
-  to: z.array(MailAddress),
-  replyTo: z.array(MailAddress),
-  body: z.optional(z.string()),
-  flags: z.object({
-    seen: z.boolean(),
-    flagged: z.optional(z.string()),
-    answered: z.boolean(),
-  }),
-});
+export const MailContent = co.record(z.string(), z.string());
+export type MailContentType = co.loaded<typeof MailContent>;
+
+export const Mail = co
+  .map({
+    seq: z.number(),
+    messageId: z.string(),
+    subject: z.string(),
+    date: z.date(),
+    from: z.array(MailAddress),
+    to: z.array(MailAddress),
+    replyTo: z.array(MailAddress),
+    content: MailContent,
+    flags: z.object({
+      seen: z.boolean(),
+      flagged: z.optional(z.string()),
+      answered: z.boolean(),
+    }),
+  })
+  .withMigration((mail) => {
+    if (!mail.$jazz.has("content")) {
+      mail.$jazz.set("content", co.record(z.string(), z.string()).create({}, { owner: mail.$jazz.owner }));
+    }
+  });
 export type MailType = co.loaded<typeof Mail>;
 
 export const Folder = co

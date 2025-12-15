@@ -11,7 +11,7 @@ export interface Mail {
   from: MailAddress[];
   to: MailAddress[];
   replyTo: MailAddress[];
-  body?: string;
+  content: Record<string, string>;
   flags: {
     seen: boolean;
     flagged: string | undefined;

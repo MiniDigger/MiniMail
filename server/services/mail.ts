@@ -1,4 +1,4 @@
-import { type FetchMessageObject, ImapFlow, type MessageAddressObject } from "imapflow";
+import { type FetchMessageObject, ImapFlow, type MessageAddressObject, SequenceString } from "imapflow";
 import type { MailAccount, Mail } from "~~/server/services/mail.types";
 import { text } from "stream/consumers";
 
@@ -62,7 +62,12 @@ export async function getMails(mailAccount: MailAccount, path: string[]) {
   return mails.reverse();
 }
 
-export async function getMail(mailAccount: MailAccount, path: string[], seq: string, preferredPart = "text/plain") {
+export async function getMail(
+  mailAccount: MailAccount,
+  path: string[],
+  seq: SequenceString,
+  preferredPart = "text/plain"
+) {
   console.log("Getting mail:", mailAccount.user, path, seq);
   const client = await ensureConnected(mailAccount);
   const lock = await client.getMailboxLock(path.join("."));
@@ -74,6 +79,11 @@ export async function getMail(mailAccount: MailAccount, path: string[], seq: str
     if (message && message.envelope) {
       let part = "1";
       if (message.bodyStructure?.type === "multipart/alternative") {
+        console.log(
+          "Looking for preferred part:",
+          preferredPart,
+          message.bodyStructure.childNodes?.map((n) => n.type)
+        );
         part = message.bodyStructure.childNodes?.find((n) => n.type === preferredPart)?.part || part;
       }
 
@@ -100,6 +110,7 @@ function mapMessage(message: FetchMessageObject): Mail {
     from: mapAddresses(message.envelope?.from) || [],
     to: mapAddresses(message.envelope?.to) || [],
     replyTo: mapAddresses(message.envelope?.replyTo) || [],
+    content: {},
   };
 }
 
