@@ -1,4 +1,4 @@
-import { co, z } from "jazz-tools";
+import { co, Group, z } from "jazz-tools";
 
 export const Settings = co.map({
   colorMode: z.literal(["light", "dark", "system"]),
@@ -58,10 +58,10 @@ export const Folder = co
   })
   .withMigration((folder) => {
     if (!folder.$jazz.has("mails")) {
-      folder.$jazz.set("mails", []);
+      folder.$jazz.set("mails", co.list(Mail).create([], { owner: folder.$jazz.owner }));
     }
     if (!folder.$jazz.has("mailIndex")) {
-      folder.$jazz.set("mailIndex", {});
+      folder.$jazz.set("mailIndex", co.record(z.string(), Mail).create({}, { owner: folder.$jazz.owner }));
     }
   });
 export type FolderType = co.loaded<typeof Folder>;
@@ -82,7 +82,7 @@ export const Account = co
   })
   .withMigration((account) => {
     if (!account.$jazz.has("folders")) {
-      account.$jazz.set("folders", []);
+      account.$jazz.set("folders", co.list(Folder).create([], { owner: account.$jazz.owner }));
     }
   });
 export type AccountType = co.loaded<typeof Account>;
@@ -107,60 +107,68 @@ export const MiniMailRoot = co
   })
   .withMigration((root) => {
     if (!root.$jazz.has("filters")) {
-      root.$jazz.set("filters", []);
+      root.$jazz.set("filters", co.list(Filter).create([], { owner: root.$jazz.owner }));
     }
     if (!root.$jazz.has("accounts")) {
-      root.$jazz.set("accounts", []);
+      root.$jazz.set("accounts", co.list(Account).create([], { owner: root.$jazz.owner }));
     }
     if (!root.$jazz.has("devices")) {
-      root.$jazz.set("devices", []);
+      root.$jazz.set("devices", co.list(Device).create([], { owner: root.$jazz.owner }));
     }
     if (!root.$jazz.has("settings")) {
-      root.$jazz.set("settings", {
+      root.$jazz.set("settings", Settings.create({
         colorMode: "system",
         primaryColor: "blue",
         neutralColor: "slate",
-      });
+      }, { owner: root.$jazz.owner }));
     }
     if (!root.$jazz.has("enabled")) {
       root.$jazz.set("enabled", false);
     }
-
-    const {
-      public: { workerAccountID },
-    } = useRuntimeConfig();
-    // make sure server worker can access everything
-    if (!root.$jazz.owner.getDirectMembers().find((m) => m.id === workerAccountID)) {
-      co.account()
-        .load(workerAccountID)
-        .then((workerAccount) => {
-          if (workerAccount?.$isLoaded) {
-            root.$jazz.owner.addMember(workerAccount, "writer");
-          } else {
-            console.warn("worker account not found", workerAccountID);
-          }
-        });
-    }
   });
+export type MiniMailRootType = co.loaded<typeof MiniMailRoot>;
 
 export const UserAccount = co
   .account({
     root: MiniMailRoot,
-    profile: co.profile(),
+    profile: co.profile()
   })
   .withMigration(async (account) => {
     if (!account.$jazz.has("root")) {
-      account.$jazz.set("root", {
-        filters: [],
-        accounts: [],
-        devices: [],
-        settings: {
-          colorMode: "system",
-          primaryColor: "blue",
-          neutralColor: "slate",
+      const ownerGroup = Group.create();
+      ownerGroup.addMember(account, "admin");
+
+      // make sure server worker can access everything
+      const {
+        public: { workerAccountID },
+      } = useRuntimeConfig();
+      co.account()
+        .load(workerAccountID)
+        .then((workerAccount) => {
+          if (workerAccount?.$isLoaded) {
+            ownerGroup.addMember(workerAccount, "admin");
+          } else {
+            console.warn("worker account not found", workerAccountID);
+          }
+        });
+
+      const root = MiniMailRoot.create(
+        {
+          filters: [],
+          accounts: [],
+          devices: [],
+          settings: {
+            colorMode: "system",
+            primaryColor: "blue",
+            neutralColor: "slate",
+          },
+          enabled: false,
         },
-        enabled: false,
-      });
+        {
+          owner: ownerGroup,
+        }
+      );
+      account.$jazz.set("root", root);
     }
   });
 

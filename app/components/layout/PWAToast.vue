@@ -1,12 +1,16 @@
+<script lang="ts" setup>
+const pwa = usePWA();
+</script>
+
 <template>
   <ClientOnly>
-    <div v-if="$pwa?.offlineReady || $pwa?.needRefresh" class="pwa-toast" role="alert">
+    <div v-if="pwa?.offlineReady || pwa?.needRefresh" class="pwa-toast" role="alert">
       <div class="message">
-        <span v-if="$pwa.offlineReady"> App ready to work offline </span>
+        <span v-if="pwa.offlineReady"> App ready to work offline </span>
         <span v-else> New content available, click on reload button to update. </span>
       </div>
-      <button v-if="$pwa.needRefresh" @click="$pwa.updateServiceWorker()">Reload</button>
-      <button @click="$pwa.cancelPrompt()">Close</button>
+      <button v-if="pwa.needRefresh" @click="pwa.updateServiceWorker()">Reload</button>
+      <button @click="pwa.cancelPrompt()">Close</button>
     </div>
   </ClientOnly>
 </template>

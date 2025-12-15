@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { type AccountType, Account } from "#shared/schema";
+import { type AccountType } from "#shared/schema";
 
 const {
   account = {
@@ -19,12 +19,8 @@ const emit = defineEmits<{
 <template>
   <UModal :title="'Edit Account ' + account?.name + ' (' + account?.email + ')'" description="dum">
     <template #body>
-      <UForm
-        :schema="Account.getDefinition()"
-        :state="state"
-        class="space-y-4 p-4 overflow-y-auto"
-        @submit="emit('close', $event.data)"
-      >
+      <!--    todo schema when jazz supports standard schema    :schema="Account.shape"-->
+      <UForm :state="state" class="space-y-4 p-4 overflow-y-auto" @submit="emit('close', $event.data)">
         <UFormField label="Name" name="name">
           <UInput v-model="state.name" class="w-48" />
         </UFormField>

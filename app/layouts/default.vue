@@ -52,32 +52,34 @@ const groups = computed(() => [
 ]);
 </script>
 <template>
-  <UDashboardGroup unit="rem">
-    <UDashboardSidebar
-      id="default"
-      v-model:open="open"
-      collapsible
-      resizable
-      class="bg-elevated/25"
-      :ui="{ footer: 'lg:border-t lg:border-default' }"
-    >
-      <template #header="{ collapsed }">
-        <AccountMenu :collapsed />
-      </template>
+  <UApp>
+    <UDashboardGroup unit="rem">
+      <UDashboardSidebar
+        id="default"
+        v-model:open="open"
+        collapsible
+        resizable
+        class="bg-elevated/25"
+        :ui="{ footer: 'lg:border-t lg:border-default' }"
+      >
+        <template #header="{ collapsed }">
+          <AccountMenu :collapsed />
+        </template>
 
-      <template #default="{ collapsed }">
-        <UDashboardSearchButton :collapsed class="bg-transparent ring-default" />
+        <template #default="{ collapsed }">
+          <UDashboardSearchButton :collapsed class="bg-transparent ring-default" />
 
-        <UNavigationMenu :collapsed :items="folders" orientation="vertical" tooltip popover />
-      </template>
+          <UNavigationMenu :collapsed :items="folders" orientation="vertical" tooltip popover />
+        </template>
 
-      <template #footer="{ collapsed }">
-        <SettingsMenu :collapsed />
-      </template>
-    </UDashboardSidebar>
+        <template #footer="{ collapsed }">
+          <SettingsMenu :collapsed />
+        </template>
+      </UDashboardSidebar>
 
-    <UDashboardSearch :groups />
+      <UDashboardSearch :groups />
 
-    <slot />
-  </UDashboardGroup>
+      <slot />
+    </UDashboardGroup>
+  </UApp>
 </template>

@@ -23,24 +23,22 @@ useSeoMeta({
     <NuxtPwaAssets />
     <NuxtRouteAnnouncer />
     <NuxtLoadingIndicator />
-    <UApp>
-      <JazzVueProviderWithClerk
-        v-if="clerk"
-        :AccountSchema="UserAccount"
-        :sync="{ peer, when: 'signedUp' }"
-        :guest-mode="false"
-        :clerk
-      >
-        <AuthWrapper>
-          <NuxtLayout>
-            <NuxtPage />
-            <PWAToast />
-          </NuxtLayout>
-        </AuthWrapper>
-      </JazzVueProviderWithClerk>
-      <div v-else>
-        <p>Loading Clerk...</p>
-      </div>
-    </UApp>
+    <JazzVueProviderWithClerk
+      v-if="clerk"
+      :AccountSchema="UserAccount"
+      :sync="{ peer, when: 'signedUp' }"
+      :guest-mode="false"
+      :clerk
+    >
+      <AuthWrapper>
+        <NuxtLayout>
+          <NuxtPage />
+          <PWAToast />
+        </NuxtLayout>
+      </AuthWrapper>
+    </JazzVueProviderWithClerk>
+    <div v-else>
+      <p>Loading Clerk...</p>
+    </div>
   </div>
 </template>

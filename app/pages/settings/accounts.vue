@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import { useAccount } from "community-jazz-vue";
-import { getLoadedOrUndefined } from "jazz-tools";
-import { type AccountType, UserAccount } from "#shared/schema";
+import { Account, type AccountType, UserAccount } from "#shared/schema";
 import { EditAccountModal } from "#components";
+import { getLoadedOrUndefined } from "jazz-tools";
 
 const me = useAccount(UserAccount, { resolve: { root: { accounts: { $each: true } } } });
 
@@ -11,9 +11,17 @@ const modal = overlay.create(EditAccountModal);
 
 async function createNew() {
   const instance = modal.open();
-  const account = (await instance.result) as AccountType | undefined;
-  if (account) {
-    getLoadedOrUndefined(me.value)?.root?.accounts?.$jazz?.push(account);
+  const result = await instance.result;
+  if (result) {
+    const root = getLoadedOrUndefined(me.value)?.root;
+    const account = Account.create(
+      {
+        ...result,
+        folders: [],
+      },
+      { owner: root?.$jazz.owner }
+    );
+    root?.accounts?.$jazz?.push(account);
   }
 }
 
@@ -53,7 +61,7 @@ async function remove(account: AccountType) {
           >
             <template v-if="account?.$isLoaded">
               <!--suppress HtmlUnknownTarget -->
-              <NuxtLink :to="'/mail/' + account.email">{{ account.name }} ({{ account.email }})</NuxtLink>
+              <span>{{ account.name }} ({{ account.email }})</span>
               <UButton @click="edit(account)">Edit</UButton>
               <UButton @click="remove(account)">Remove</UButton>
             </template>

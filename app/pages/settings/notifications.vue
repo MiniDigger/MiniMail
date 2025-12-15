@@ -9,9 +9,10 @@ const deviceName = ref("New Device");
 const toast = useToast();
 
 async function registerForPushNotifications() {
+  const root = getLoadedOrUndefined(me.value)?.root;
   if (
     deviceName.value === "" ||
-    getLoadedOrUndefined(me.value)?.root?.devices?.find((d) => d?.name === deviceName.value)
+    root?.devices?.find((d) => d?.name === deviceName.value)
   ) {
     toast.add({
       title: "Error",
@@ -50,12 +51,12 @@ async function registerForPushNotifications() {
       device = Device.create({
         name: deviceName.value,
         pushRegistration: newSub.toJSON() as DeviceType["pushRegistration"],
-      });
-      getLoadedOrUndefined(me.value)?.root?.devices?.$jazz?.push(device);
+      }, { owner: root?.$jazz.owner });
+      root?.devices?.$jazz?.push(device);
     } else {
       console.log("Existing subscription:", sub);
       console.log(JSON.stringify(sub));
-      const newDevice = getLoadedOrUndefined(me.value)?.root?.devices?.find(
+      const newDevice = root?.devices?.find(
         (d) => d?.pushRegistration?.endpoint === sub.endpoint
       );
       if (newDevice) {
@@ -65,8 +66,8 @@ async function registerForPushNotifications() {
         device = Device.create({
           name: deviceName.value,
           pushRegistration: sub.toJSON() as DeviceType["pushRegistration"],
-        });
-        getLoadedOrUndefined(me.value)?.root?.devices?.$jazz?.push(device);
+        }, { owner: root?.$jazz.owner });
+        root?.devices?.$jazz?.push(device);
       }
     }
     await test(device);
