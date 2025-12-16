@@ -25,6 +25,7 @@
     "@nuxt/eslint": "1.12.1",
     "@nuxt/kit": "4.2.2",
     "@nuxt/ui": "4.2.1",
+    "@tailwindcss/typography": "0.5.19",
     "@types/nodemailer": "7.0.4",
     "@types/web-push": "3.6.4",
     "@vite-pwa/assets-generator": "1.0.2",

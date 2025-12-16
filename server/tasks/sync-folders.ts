@@ -73,7 +73,7 @@ function syncFolders(imapFolders: { name: string; path: string[] }[], existingFo
   existingFolders.$jazz.remove((folder) => {
     const key = buildKey(folder);
     if (!imapKeys.has(key)) {
-      stats.updated.push(key);
+      stats.removed.push(key);
       return true;
     }
     return false;

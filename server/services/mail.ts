@@ -46,7 +46,6 @@ export async function getFolders(mailAccount: MailAccount) {
 }
 
 export async function getMails(mailAccount: MailAccount, path: string[]) {
-  console.log("Getting mails:", mailAccount.user, path);
   const client = await ensureConnected(mailAccount);
 
   const mails = [] as Mail[];
@@ -62,13 +61,7 @@ export async function getMails(mailAccount: MailAccount, path: string[]) {
   return mails.reverse();
 }
 
-export async function getMail(
-  mailAccount: MailAccount,
-  path: string[],
-  seq: SequenceString,
-  preferredPart = "text/plain"
-) {
-  console.log("Getting mail:", mailAccount.user, path, seq);
+export async function getMail(mailAccount: MailAccount, path: string[], seq: SequenceString) {
   const client = await ensureConnected(mailAccount);
   const lock = await client.getMailboxLock(path.join("."));
   try {
@@ -77,21 +70,47 @@ export async function getMail(
       bodyStructure: true,
     });
     if (message && message.envelope) {
-      let part = "1";
-      if (message.bodyStructure?.type === "multipart/alternative") {
-        console.log(
-          "Looking for preferred part:",
-          preferredPart,
-          message.bodyStructure.childNodes?.map((n) => n.type)
-        );
-        part = message.bodyStructure.childNodes?.find((n) => n.type === preferredPart)?.part || part;
+      let textPart = "1";
+      let htmlPart = undefined as string | undefined;
+      if (message.bodyStructure?.type === "multipart/alternative" && message.bodyStructure.childNodes) {
+        for (let struc of message.bodyStructure.childNodes) {
+          if (struc.type === "text/html") {
+            htmlPart = struc.part;
+          } else if (struc.type === "text/plain") {
+            textPart = struc.part || textPart;
+          } else if (struc.type === "multipart/related") {
+            for (let relStruc of struc.childNodes || []) {
+              if (relStruc.type === "text/html") {
+                htmlPart = relStruc.part;
+              } else {
+                // TODO handle attachments
+                console.log(
+                  "unknown message rel struc type",
+                  relStruc.type,
+                  "for message",
+                  message.id
+                  //message.bodyStructure
+                );
+              }
+            }
+          } else {
+            console.log("unknown message struc type", struc.type, "for message", message.id, message.bodyStructure);
+          }
+        }
       }
 
-      const { content } = await client.download(message.uid, part);
-      const body = await text(content);
+      async function download(part: string | undefined, msg: FetchMessageObject) {
+        if (!part) return undefined;
+        const { content } = await client.download(msg.uid, part);
+        return text(content);
+      }
+
       return {
         ...mapMessage(message),
-        body,
+        content: {
+          text: await download(textPart, message),
+          html: await download(htmlPart, message),
+        },
       };
     }
     return undefined;

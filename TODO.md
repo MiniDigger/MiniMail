@@ -2,9 +2,9 @@
 - implement sending emails (in the ui)
 - implement actions in ui (delete, mark as read, move to folder, flag etc)
 - push notifications (actually send them)
-- delete mails when deleted from imap
 - put selected account and mail and stuff into query (useful for push notifications)
 - host own jazz server
 - implement a view with all folders from all mailboxes combined (or all unread)
-- implement html view for mails, toggleable in ui (what do we need to do to make it safe?)
+- make html view safe
+- implement attachments
 - implement search (do we need an index?)

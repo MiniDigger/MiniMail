@@ -3,6 +3,7 @@ import { useCoState } from "community-jazz-vue";
 import RelativeDate from "~/components/RelativeDate.vue";
 import { Mail } from "#shared/schema";
 import { selectedMailId } from "~/store";
+import type { TabsItem } from "#ui/components/Tabs.vue";
 
 const dropdownItems = [
   [
@@ -34,6 +35,21 @@ const toast = useToast();
 const reply = ref("");
 const loading = ref(false);
 
+const contentType = ref("html");
+const contentTypes: TabsItem[] = [
+  { label: "HTML", value: "html" },
+  { label: "Plain text", value: "text" },
+];
+const content = computed(() => {
+  if (!mail.value.$isLoaded || !mail.value.content.$isLoaded) return "Loading...";
+
+  if (contentType.value === "html") {
+    return mail.value.content.html || mail.value.content.text;
+  } else {
+    return mail.value.content.text;
+  }
+});
+
 function onSubmit() {
   loading.value = true;
 
@@ -62,8 +78,9 @@ async function close() {
       <template #leading>
         <UButton icon="i-lucide-x" color="neutral" variant="ghost" class="-ms-1.5" @click="close" />
       </template>
-
       <template #right>
+        <UTabs v-model="contentType" :items="contentTypes" size="sm" class="w-40" :content="false" />
+
         <UTooltip text="Archive">
           <UButton icon="i-lucide-inbox" color="neutral" variant="ghost" />
         </UTooltip>
@@ -96,10 +113,13 @@ async function close() {
         </p>
       </div>
 
-      <div class="flex-1 p-4 sm:p-6 overflow-y-auto">
-        <p class="whitespace-pre-wrap">
-          {{ mail.content.html }}
-        </p>
+      <!-- todo prose class is most likely wrong, but it works for now -->
+      <div
+        class="flex-1 p-4 sm:p-6 overflow-y-auto"
+        :class="contentType === 'text' ? 'whitespace-pre-wrap' : 'prose dark:prose-invert max-w-none'"
+      >
+        <!-- todo wtf is this encoding?! -->
+        <div v-html="content?.replaceAll('=3D', '=')" />
       </div>
 
       <div class="pb-4 px-4 sm:px-6 shrink-0">
