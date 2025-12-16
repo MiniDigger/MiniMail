@@ -4,6 +4,7 @@ import RelativeDate from "~/components/RelativeDate.vue";
 import { Mail } from "#shared/schema";
 import { selectedMailId } from "~/store";
 import type { TabsItem } from "#ui/components/Tabs.vue";
+import DOMPurify from "dompurify";
 
 const dropdownItems = [
   [
@@ -40,11 +41,19 @@ const contentTypes: TabsItem[] = [
   { label: "HTML", value: "html" },
   { label: "Plain text", value: "text" },
 ];
+const allowImages = ref(false);
 const content = computed(() => {
   if (!mail.value.$isLoaded || !mail.value.content.$isLoaded) return "Loading...";
 
-  if (contentType.value === "html") {
-    return mail.value.content.html || mail.value.content.text;
+  if (contentType.value === "html" && mail.value.content.html) {
+    // TODO wtf is this encoding
+    const html = mail.value.content.html?.replaceAll("=3D", "=");
+    // sanitize html content
+    // TODO brick image links via button
+    return DOMPurify.sanitize(html, {
+      USE_PROFILES: { html: true },
+      ALLOWED_URI_REGEXP: allowImages.value ? undefined : /^thiswillnevermatchanything$/,
+    });
   } else {
     return mail.value.content.text;
   }
@@ -79,6 +88,7 @@ async function close() {
         <UButton icon="i-lucide-x" color="neutral" variant="ghost" class="-ms-1.5" @click="close" />
       </template>
       <template #right>
+        <USwitch v-if="contentType === 'html'" v-model="allowImages" label="Allow Images" />
         <UTabs v-model="contentType" :items="contentTypes" size="sm" class="w-40" :content="false" />
 
         <UTooltip text="Archive">
@@ -118,8 +128,7 @@ async function close() {
         class="flex-1 p-4 sm:p-6 overflow-y-auto"
         :class="contentType === 'text' ? 'whitespace-pre-wrap' : 'prose dark:prose-invert max-w-none'"
       >
-        <!-- todo wtf is this encoding?! -->
-        <div v-html="content?.replaceAll('=3D', '=')" />
+        <div v-html="content" />
       </div>
 
       <div class="pb-4 px-4 sm:px-6 shrink-0">

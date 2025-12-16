@@ -5,6 +5,6 @@
 - put selected account and mail and stuff into query (useful for push notifications)
 - host own jazz server
 - implement a view with all folders from all mailboxes combined (or all unread)
-- make html view safe
+- make html view safe (good enough for now, google on how others do it)
 - implement attachments
 - implement search (do we need an index?)

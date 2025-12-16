@@ -32,6 +32,7 @@
     "@vite-pwa/nuxt": "1.1.0",
     "@vueuse/core": "14.1.0",
     "community-jazz-vue": "0.19.11",
+    "dompurify": "3.3.1",
     "eslint": "9.39.1",
     "hookable": "5.5.3",
     "imapflow": "1.2.0",
