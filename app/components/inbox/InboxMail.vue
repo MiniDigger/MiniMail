@@ -78,7 +78,7 @@ async function close() {
       </template>
     </UDashboardNavbar>
 
-    <div v-if="mail.$isLoaded">
+    <div v-if="mail.$isLoaded" class="contents">
       <div class="flex flex-col sm:flex-row justify-between gap-1 p-4 sm:px-6 border-b border-default">
         <div class="flex items-start gap-4 sm:my-1.5">
           <div v-for="a in mail.from" :key="a.address" class="min-w-0">
